@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "bandit",
+          "rules": [
+            {
+              "id": "B108",
+              "shortDescription": {
+                "text": "Probable path traversal or insecure file access"
+              },
+              "properties": {
+                "cwe": [
+                  "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+                ],
+                "issue_severity": "HIGH",
+                "issue_confidence": "HIGH"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "B108",
+          "level": "error",
+          "message": {
+            "text": "File open with untrusted filename leading to path traversal CWE-22"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "routes/download.py"
+                },
+                "region": {
+                  "startLine": 15,
+                  "endLine": 15,
+                  "startColumn": 5,
+                  "endColumn": 30,
+                  "snippet": {
+                    "text": "open(os.path.join(base_dir, user_file), 'rb')"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

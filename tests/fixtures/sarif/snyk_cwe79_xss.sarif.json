@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "SnykCode",
+          "rules": [
+            {
+              "id": "javascript/express/xss",
+              "shortDescription": {
+                "text": "Cross-Site Scripting (XSS) vulnerability"
+              },
+              "properties": {
+                "cwe": [
+                  "CWE-79"
+                ],
+                "cvssV3_baseScore": 7.5,
+                "tags": ["security", "CWE-79"]
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "javascript/express/xss",
+          "level": "error",
+          "message": {
+            "text": "Unsanitized user input rendered directly in res.send() response."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.js"
+                },
+                "region": {
+                  "startLine": 22,
+                  "endLine": 22,
+                  "startColumn": 5,
+                  "endColumn": 40,
+                  "snippet": {
+                    "text": "res.send('<h1>Hello ' + req.query.name + '</h1>')"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

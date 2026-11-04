@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "semgrep",
+          "semanticVersion": "1.65.0",
+          "rules": [
+            {
+              "id": "python.flask.security.injection.sql.direct-sql-query",
+              "name": "direct-sql-query",
+              "shortDescription": {
+                "text": "Direct SQL injection vulnerability in database cursor execution"
+              },
+              "properties": {
+                "cwe": [
+                  "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+                ],
+                "impact": "HIGH",
+                "confidence": "HIGH"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "python.flask.security.injection.sql.direct-sql-query",
+          "level": "error",
+          "message": {
+            "text": "Untrusted user input 'username' directly concatenated into SQL query string passed to cursor.execute()."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app.py"
+                },
+                "region": {
+                  "startLine": 28,
+                  "endLine": 28,
+                  "startColumn": 9,
+                  "endColumn": 45,
+                  "snippet": {
+                    "text": "cursor.execute(query)"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

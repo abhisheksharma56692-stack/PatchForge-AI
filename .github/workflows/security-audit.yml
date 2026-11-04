@@ -1,0 +1,24 @@
+name: Security Self-SAST Audit
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 1'
+
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run Bandit Security Scanner
+      run: |
+        pip install bandit
+        bandit -r src/ -f sarif -o bandit-results.sarif || true
+
+    - name: Run Semgrep SAST
+      run: |
+        pip install semgrep
+        semgrep scan --config auto --sarif -o semgrep-results.sarif || true
+
