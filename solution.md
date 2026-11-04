@@ -7,12 +7,14 @@
 
 ## 1. Executive System Overview
 
-The **PatchForge Unified Engine** consolidates four advanced computer science disciplines into a single autonomous software security pipeline:
+The **PatchForge Unified Engine** consolidates six advanced computer science and software engineering disciplines into a single autonomous software security pipeline:
 
 1. **Symbolic AST Slicing (Pillar 1):** Eliminates prompt bloat and hallucination by parsing source code into Program Dependence Graphs (PDGs) via Tree-sitter, isolating only the vulnerable execution slice.
 2. **SMT Solver-Guided Formal Invariants (Pillar 4):** Uses First-Order Logic constraints and the Microsoft Z3 Theorem Prover to mathematically verify that patch bounds cannot cause index out-of-bounds, overflows, or schema bypasses.
 3. **Adversarial Dual-Agent Validation (Pillar 2):** Couples an Automated Security Test Synthesizer (which creates dynamic regression tests confirming flaw presence) with a Remediation Synthesizer (which writes the fix) governed by an Anti-Tamper Auditor.
 4. **Hermetic Micro-Sandbox & Mutation Engine (Pillar 3):** Executes untrusted patches inside ephemeral, rootless, air-gapped (`--network none`) containers and applies mutation testing to verify that test suites genuinely exercise the remediated code paths.
+5. **AWS Cloud-Native Resilience (Pillar 5):** Employs Amazon S3 for immutable SARIF & patch artifact persistence, AWS Bedrock for enterprise LLM inference (Claude 3.5 Sonnet), Amazon SQS for asynchronous event streaming, and Amazon DynamoDB for real-time audit logging.
+6. **🎃 Halloween-Themed Real-Time Operations UI (Pillar 6):** A distinctive, spooky operations dashboard (React + TailwindCSS + FastAPI) featuring live state-machine visualizers, a "Vulnerability Crypt" with skull ratings (💀), bubbling cauldron resource gauges, and a "Vulnerability Graveyard" archiving neutralized CVEs as tombstones (⚰️).
 
 ---
 
@@ -145,6 +147,8 @@ $$
 | **Language Models** | Claude 3.5 Sonnet / DeepSeek-Coder-V2 | Code synthesis, test generation, and diff minimization. |
 | **Container Sandboxing** | `Docker SDK for Python` / `Podman` | Rootless, air-gapped (`--network none`) execution harness with resource quotas. |
 | **Mutation Testing** | `mutmut` (Python) / `stryker` (JS/TS) | AST-level mutant injection to prove regression test adequacy. |
+| **AWS Cloud Services** | `boto3`, Amazon S3, SQS, DynamoDB, Bedrock, ECR | Artifact persistence, event streaming, managed LLM inference & audit trails. |
+| **🎃 Halloween Dashboard UI** | React 18, Vite, TailwindCSS, FastAPI, WebSockets | Real-time monitoring dashboard styled with Halloween dark theme & animated state nodes. |
 | **Diagnostic Scanners** | `Semgrep CLI`, `Bandit`, `Trivy` | Input SARIF report generation and Delta-SAST re-scanning. |
 | **VCS & Delivery** | `PyGithub`, `GitPython` | Branching, GPG commit signing, and automated PR submission. |
 
@@ -161,19 +165,21 @@ $$
 * *Integrated the Z3 Theorem Prover to extract mathematical boundary invariants, guaranteeing zero off-by-one or buffer-boundary regressions in synthesized patches.*
 * *Built an adversarial validation loop featuring an automated security test synthesizer and an anti-tamper auditor to ensure fixes neutralize flaws without altering test integrity.*
 * *Architected an isolated, air-gapped Docker execution sandbox with cgroup resource limits and automated mutation testing, ensuring all generated pull requests achieve $\ge 85\%$ mutation coverage.*
+* *Integrated AWS Cloud services (S3, SQS, DynamoDB, Bedrock, ECR) to build a fault-tolerant, horizontally scalable remediation pipeline.*
+* *Designed a real-time Halloween-themed DevSecOps monitoring dashboard (React + TailwindCSS + WebSockets) tracking live AST slicing, Z3 satisfiability states, and vulnerability graves.*
 
 ---
 
 ## 7. 3-Minute IIT Hackathon Pitch & Live Demo Script
 
 1. **The Hook (0:00 - 0:45):**  
-   *"Current static scanners alert developers to thousands of vulnerabilities, but do not fix them. Meanwhile, naive LLMs hallucinate dependencies, break APIs, and cannot be trusted on production codebases. We built PatchForge: an autonomous, compiler-aware, formally verified self-healing pipeline."*
+   *"Current static scanners alert developers to thousands of vulnerabilities, but do not fix them. Meanwhile, naive LLMs hallucinate dependencies, break APIs, and cannot be trusted on production codebases. We built PatchForge: an autonomous, compiler-aware, formally verified self-healing pipeline backed by AWS and presented through our Halloween-themed operational dashboard."*
 2. **The Live Demo (0:45 - 2:15):**  
-   * Inject a vulnerable snippet (e.g., path traversal or SQL injection in a sample service).
-   * Show the CLI/Dashboard: Tree-sitter isolates 30 lines out of a large file; Z3 computes the required boundary constraints.
-   * Watch the Verifier Agent run a reproduction test inside the Docker sandbox (`Status: ❌ VULNERABILITY CONFIRMED`).
-   * The Remediator Agent applies the patch; the sandbox re-runs the attack (`Status: ✅ ATTACK NEUTRALIZED`) and confirms all existing unit tests pass.
-   * Mutation testing runs, killing 92% of injected AST mutants to verify code coverage.
+   * Open the **🎃 Halloween Dashboard**: show the "Vulnerability Crypt" where a high-severity SQL injection is flagged with 5 skulls (💀).
+   * Ingest the SARIF report through Amazon S3/SQS. Watch the "Patch Workbench" live pipeline ignite: Tree-sitter isolates 30 lines; Z3 solves boundary constraints.
+   * Watch Agent Alpha synthesize a PoC test; the sandbox confirms the vulnerability inside an air-gapped container (`Status: ❌ VULNERABILITY CONFIRMED`).
+   * Agent Beta synthesizes the patch; the sandbox re-runs tests (`Status: ✅ ATTACK NEUTRALIZED`) and mutation testing kills 92% of mutants.
+   * The resolved vulnerability is moved to the **⚰️ Vulnerability Graveyard** with a custom "R.I.P." tombstone card, while audit metrics sync to Amazon DynamoDB.
 3. **The Conclusion & Impact (2:15 - 3:00):**  
    * Show the automatically generated GitHub Pull Request complete with execution logs, diff analysis, and verification badges.
    * Emphasize the shift from passive alerting to deterministic, autonomous remediation.

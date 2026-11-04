@@ -15,12 +15,14 @@ git push -u origin main# PatchForge AI: System Architecture Specification (SAS)
 ### 1.1 Core Problem Statement Addressed
 Existing Static Application Security Testing (SAST) tools generate diagnostic reports without fixes, leaving developers with alert fatigue and a 45–120 day Mean Time to Remediate (MTTR). Conversely, naive LLMs hallucinate dependencies, introduce syntax/runtime regressions, and fail to understand multi-file call graphs.
 
-### 1.2 The Five Architectural Pillars
+### 1.2 The Seven Architectural Pillars
 1. **Context Isolation via Symbolic AST Slicing:** Uses Tree-sitter and NetworkX to generate Program Dependence Graphs (PDGs), reducing code passed to LLMs by 80–90% to prevent context bloat and hallucination.
 2. **SMT Solver-Driven Formal Invariants:** Translates code boundaries into First-Order Logic (FOL) verified by the Microsoft Z3 Theorem Prover to eliminate off-by-one errors and integer/buffer overflows.
 3. **Adversarial Dual-Agent Orchestration:** Separates patch generation from test synthesis (Red-Team Verifier vs. Blue-Team Remediator) overseen by an Anti-Tamper Auditor.
 4. **Hermetic Rootless Sandboxing:** Executes untrusted synthesized patches inside ephemeral, rootless, network-isolated (`--network none`) micro-containers enforcing strict CPU/RAM cgroups.
 5. **Mutation Testing & Delta-SAST Verification:** Guarantees patches survive mutation analysis ($\ge 85\%$ mutation score) and completely eliminate the original static vulnerability signature without regression.
+6. **AWS Cloud-Native Backend Infrastructure:** Leverages AWS services as the backbone — **Amazon S3** for SARIF report storage and patch artifact persistence, **AWS Bedrock** for managed LLM inference (Claude via Bedrock), **Amazon SQS** for asynchronous vulnerability event queuing, **Amazon ECR** for hosting hardened sandbox container images, and **Amazon DynamoDB** for remediation run audit trail storage.
+7. **Halloween-Themed Real-Time Operations Dashboard:** A visually distinctive, dark-themed monitoring UI built with a 🎃 Halloween design system — featuring a real-time pipeline status tracker, vulnerability graveyard, patch synthesis live feed, and sandbox execution telemetry, all styled with a spooky dark-purple/orange/black color palette, skeletal iconography, and animated ghost/bat decorations.
 
 ---
 
@@ -34,17 +36,30 @@ flowchart TD
     UserDev["Developer / AppSec Engineer"]
     VCS["Version Control System (GitHub, GitLab, Bitbucket)"]
     Scanner["SAST / SCA Scanners (Semgrep, Snyk, SonarQube, Bandit)"]
-    LLMCluster["LLM Inference Engine (Claude 3.5 Sonnet / DeepSeek-Coder-V2)"]
+    LLMCluster["AWS Bedrock / LLM Inference (Claude 3.5 Sonnet)"]
+    Dashboard["🎃 Halloween-Themed Dashboard UI"]
     
+    subgraph AWS["AWS Cloud Infrastructure"]
+        S3["Amazon S3 (SARIF & Artifact Storage)"]
+        SQS["Amazon SQS (Vulnerability Event Queue)"]
+        ECR["Amazon ECR (Sandbox Container Images)"]
+        DDB["Amazon DynamoDB (Audit Trail)"]
+    end
+
     subgraph PFUE["PatchForge AI System Boundary"]
         CoreEngine["PatchForge Unified Remediation Engine"]
     end
 
-    Scanner -->|"SARIF Report (Vulnerabilities, CWE, Line Offsets)"| CoreEngine
+    Scanner -->|"SARIF Report"| S3
+    S3 -->|"Fetch SARIF"| CoreEngine
+    SQS -->|"Vulnerability Events"| CoreEngine
     VCS -->|"Repository Source Code & Git History"| CoreEngine
     CoreEngine <-->|"Structured Slicing Context & Formal Prompts"| LLMCluster
+    CoreEngine -->|"Pull Sandbox Images"| ECR
     CoreEngine -->|"Validated, GPG-Signed Branch & Pull Request"| VCS
-    CoreEngine -->|"Audit Telemetry & Verification Badges"| UserDev
+    CoreEngine -->|"Audit Logs & Run History"| DDB
+    CoreEngine -->|"Real-Time Pipeline Telemetry"| Dashboard
+    Dashboard -->|"Live Status & Verification Badges"| UserDev
 ```
 
 ---
@@ -81,6 +96,74 @@ flowchart LR
     StateGraph -->|"All Conditions Validated"| Dispatcher["6. VCS Delivery & PR Dispatcher"]
     Dispatcher --> PR["GitHub / GitLab Pull Request"]
 ```
+
+---
+
+### 2.4 AWS Cloud Service Architecture
+
+```mermaid
+flowchart LR
+    subgraph AWSCloud["AWS Cloud Services"]
+        S3["Amazon S3"]
+        SQS["Amazon SQS"]
+        Bedrock["AWS Bedrock (Claude)"]
+        ECR["Amazon ECR"]
+        DDB["Amazon DynamoDB"]
+    end
+
+    subgraph PF["PatchForge Engine"]
+        Ingest["Ingestion Layer"] -->|"Read SARIF"| S3
+        S3 -->|"Store Patch Artifacts & V-BOM"| Delivery["PR Delivery"]
+        SQS -->|"Poll Vulnerability Events"| Ingest
+        Agents["Agent Layer"] <-->|"LLM Inference via Bedrock"| Bedrock
+        Sandbox["Sandbox Layer"] -->|"Pull Runtime Image"| ECR
+        Delivery -->|"Write Audit Record"| DDB
+        Dashboard["🎃 Halloween Dashboard"] -->|"Read Run History"| DDB
+    end
+```
+
+#### AWS Service Roles
+
+| AWS Service | Role in PatchForge AI | Key Configuration |
+| :--- | :--- | :--- |
+| **Amazon S3** | Central artifact store for incoming SARIF reports, generated patch diffs, reproduction test files, and signed Verification Bills of Materials (V-BOM). | Bucket: `patchforge-artifacts-<account>`, SSE-S3 encryption, lifecycle policy (90-day transition to Glacier). |
+| **AWS Bedrock** | Managed LLM inference endpoint for Claude 3.5 Sonnet. Eliminates self-hosted GPU infrastructure and provides IAM-scoped access control for model invocations. | Model ID: `anthropic.claude-3-5-sonnet`, Region: `us-east-1`, IAM role with `bedrock:InvokeModel` permission. |
+| **Amazon SQS** | Asynchronous vulnerability event queue. Scanners or CI pipelines publish SARIF events to SQS; the PatchForge orchestrator polls and processes them in order. | Queue: `patchforge-vuln-queue`, Visibility Timeout: 300s, Dead-Letter Queue after 3 failed attempts. |
+| **Amazon ECR** | Hosts the pre-built, hardened sandbox runtime images (Python, Node, Go). The sandbox subsystem pulls images from ECR before spinning up hermetic containers. | Repository: `patchforge-sandbox-runtimes`, Image scanning enabled, Immutable tags enforced. |
+| **Amazon DynamoDB** | Stores remediation run audit trails — every pipeline execution, iteration count, pass/fail status, PR URL, timestamps. Powers the dashboard's historical analytics. | Table: `PatchForgeAuditTrail`, Partition Key: `run_id`, Sort Key: `timestamp`, On-Demand capacity. |
+
+---
+
+### 2.5 Halloween-Themed Dashboard UI Architecture
+
+The PatchForge AI dashboard follows a **Halloween design system** providing real-time operational visibility.
+
+#### 🎃 Design System Specification
+
+| Design Element | Specification |
+| :--- | :--- |
+| **Primary Background** | Midnight Black `#0d0d0d` with subtle cobweb SVG texture overlay |
+| **Secondary Background** | Deep Coffin Purple `#1a0a2e` for card surfaces and panels |
+| **Accent Color (Primary)** | Pumpkin Orange `#ff6b00` for CTAs, active states, progress bars |
+| **Accent Color (Danger)** | Blood Red `#8b0000` for critical vulnerabilities and failed states |
+| **Accent Color (Success)** | Ghostly Green `#00ff88` for passed tests and patched statuses |
+| **Accent Color (Warning)** | Cauldron Yellow `#ffd700` for in-progress and pending states |
+| **Typography (Headings)** | `Creepster` (Google Fonts) — spooky display font for section headers |
+| **Typography (Body)** | `JetBrains Mono` — monospace for code/data; `Inter` for body text |
+| **Icons** | 💀 Skull = Critical CVE, 👻 Ghost = Patched/Resolved, 🎃 Jack-o-lantern = Warning, 🦇 Bat = In-Progress, 🕸️ Spider Web = Pending Analysis, ⚰️ Coffin = Archived/Closed |
+| **Animations** | Floating ghost particles on idle screens, bat-fly-across on new event arrival, flickering candle glow on active pipeline nodes, skeleton bone rattle on error state |
+| **Borders & Dividers** | Jagged torn-edge borders on cards; dripping-slime-style CSS dividers between sections |
+
+#### Dashboard Pages & Components
+
+| Page / Component | Description |
+| :--- | :--- |
+| **🏚️ Haunted Home Dashboard** | Overview: total open vulnerabilities (skulls), patches in progress (bats), patches merged (ghosts), pipeline health meter (cauldron fill gauge). Animated graveyard scene as hero illustration. |
+| **💀 Vulnerability Crypt** | List view of all active vulnerability findings with severity skull ratings (1–5 skulls). Filter by CWE, scanner source, severity, age. Each row shows file path, CWE-ID, scanner, and MTTR timer. |
+| **🔬 Patch Forge Workbench** | Live view of the current remediation pipeline: animated state machine nodes (AST Slicing → Z3 Proofs → Agent Synthesis → Sandbox → PR). Each node glows orange when active, green when passed, red with dripping blood effect when failed. |
+| **⚰️ Vulnerability Graveyard** | Historical archive of all successfully remediated vulnerabilities. Each entry displayed as a "tombstone" card with CWE-ID, remediation date, PR link, and "R.I.P." label. Sorted by date of death (patch merge date). |
+| **🧪 Sandbox Dungeon** | Real-time container execution monitor: CPU/RAM gauges (styled as bubbling cauldrons), test pass/fail counters, mutation score spider chart, Delta-SAST status indicator. |
+| **📊 Haunted Analytics** | Time-series charts (MTTR trends, patch success rate, vulnerability burn-down) with Halloween-styled dark chart theme. Data sourced from DynamoDB audit trail. |
 
 ---
 
@@ -399,6 +482,41 @@ patchforge-ai/
 │   │   ├── node-20.Dockerfile     # Ephemeral sandbox image for Node/TS
 │   │   └── go-1.22.Dockerfile     # Ephemeral sandbox image for Go
 │   └── seccomp-profile.json       # Restricted syscall profile for sandbox
+├── dashboard/                     # 🎃 Halloween-Themed Dashboard UI
+│   ├── public/
+│   │   ├── index.html             # HTML entry point with Halloween meta tags
+│   │   ├── favicon-pumpkin.ico    # 🎃 Pumpkin favicon
+│   │   └── assets/
+│   │       ├── cobweb-texture.svg # Background cobweb SVG overlay
+│   │       ├── graveyard-hero.svg # Animated graveyard hero illustration
+│   │       ├── ghost-particle.svg # Floating ghost particle animation sprite
+│   │       └── bat-animation.svg  # Bat fly-across animation sprite
+│   ├── src/
+│   │   ├── App.jsx                # Root React app with Halloween theme provider
+│   │   ├── index.jsx              # React entry point
+│   │   ├── theme/
+│   │   │   ├── halloween.js       # Dark color palette, fonts, spacing tokens
+│   │   │   └── animations.css     # Ghost float, bat fly, candle flicker CSS keyframes
+│   │   ├── components/
+│   │   │   ├── Sidebar.jsx        # Navigation sidebar with cobweb border
+│   │   │   ├── SkullRating.jsx    # 1–5 skull severity rating component
+│   │   │   ├── TombstoneCard.jsx  # "R.I.P." card for remediated vulns
+│   │   │   ├── CauldronGauge.jsx  # Bubbling cauldron CPU/RAM gauge
+│   │   │   ├── PipelineNode.jsx   # Animated state machine node (glow/drip effects)
+│   │   │   └── GhostParticles.jsx # Floating ghost idle animation overlay
+│   │   ├── pages/
+│   │   │   ├── HauntedHome.jsx    # 🏚️ Overview dashboard
+│   │   │   ├── VulnCrypt.jsx      # 💀 Active vulnerability list
+│   │   │   ├── PatchWorkbench.jsx # 🔬 Live pipeline visualizer
+│   │   │   ├── Graveyard.jsx      # ⚰️ Remediated vulnerability archive
+│   │   │   ├── SandboxDungeon.jsx # 🧪 Container execution monitor
+│   │   │   └── HauntedAnalytics.jsx # 📊 Time-series charts & metrics
+│   │   └── services/
+│   │       ├── api.js             # REST API client for backend
+│   │       └── websocket.js       # WebSocket client for real-time pipeline updates
+│   ├── package.json               # React + Vite + TailwindCSS dependencies
+│   ├── tailwind.config.js         # Halloween color palette Tailwind config
+│   └── vite.config.js             # Vite build configuration
 ├── docs/
 │   ├── ARCHITECTURE.md            # This specification
 │   ├── THREAT_MODEL.md            # STRIDE threat model
@@ -408,6 +526,24 @@ patchforge-ai/
 │       ├── __init__.py
 │       ├── cli.py                 # Command line interface (`patchforge run`)
 │       ├── config.py              # Pydantic Settings & environment config
+│       │
+│       ├── aws/                   # AWS Cloud Integration Layer
+│       │   ├── __init__.py
+│       │   ├── s3_client.py       # S3 artifact upload/download (SARIF, patches, V-BOM)
+│       │   ├── sqs_client.py      # SQS vulnerability event queue consumer/producer
+│       │   ├── bedrock_client.py  # AWS Bedrock LLM inference wrapper (Claude)
+│       │   ├── ecr_client.py      # ECR image pull/push for sandbox runtimes
+│       │   └── dynamodb_client.py # DynamoDB audit trail read/write operations
+│       │
+│       ├── api/                   # REST API Backend for Dashboard
+│       │   ├── __init__.py
+│       │   ├── server.py          # FastAPI server for dashboard API endpoints
+│       │   ├── routes/
+│       │   │   ├── dashboard.py   # GET /api/dashboard — overview metrics
+│       │   │   ├── vulnerabilities.py # GET /api/vulns — active vulnerability list
+│       │   │   ├── runs.py        # GET /api/runs — remediation run history
+│       │   │   └── pipeline.py    # WebSocket /ws/pipeline — live pipeline status
+│       │   └── schemas.py         # API response Pydantic schemas
 │       │
 │       ├── ingestion/             # Subsystem 1: Ingestion & SARIF Parsing
 │       │   ├── __init__.py
@@ -436,6 +572,7 @@ patchforge-ai/
 │       │   ├── graph.py           # LangGraph state machine & router definitions
 │       │   ├── state.py           # RemediationGraphState TypedDict
 │       │   ├── prompts.py         # Versioned, constrained LLM prompts
+│       │   ├── llm_client.py      # Unified LLM wrapper (direct API + AWS Bedrock)
 │       │   ├── test_synthesizer.py# Agent Alpha (Red Team test generator)
 │       │   ├── patch_synthesizer.py# Agent Beta (Blue Team patch remediator)
 │       │   ├── auditor.py         # Agent Gamma (Anti-tamper diff inspector)
@@ -630,30 +767,40 @@ class HermeticSandboxHarness:
 
 ## 8. Enterprise Deployment Architecture
 
-PatchForge AI is designed for three deployment modalities across enterprise environments:
+PatchForge AI is designed for three deployment modalities across enterprise environments, all backed by **AWS cloud services**:
 
 ### 8.1 Mode A: Native GitHub Action / GitLab CI Runner
 - Integrates directly into target repository pipelines.
 - Triggered on PR opening or scheduled nightly security scans.
-- Ingests CI-generated SARIF artifacts and autonomously generates remediation branches.
+- Ingests CI-generated SARIF artifacts, uploads to **Amazon S3**, and autonomously generates remediation branches.
+- Pushes sandbox images from **Amazon ECR** for hermetic container execution.
 
-### 8.2 Mode B: Centralized Kubernetes DevSecOps Daemon
-- Deployed as a scalable microservice on Amazon EKS / Google GKE.
-- Listens to organization-wide webhook events from GitHub Enterprise / GitLab.
+### 8.2 Mode B: Centralized AWS Kubernetes DevSecOps Daemon
+- Deployed as a scalable microservice on **Amazon EKS** (Elastic Kubernetes Service).
+- Listens to organization-wide webhook events from GitHub Enterprise / GitLab via **Amazon SQS** event queue.
+- LLM inference routed through **AWS Bedrock** (Claude 3.5 Sonnet) — no self-hosted GPU infrastructure required.
 - Utilizes `gVisor` (`runsc`) or rootless Podman as the container runtime for ultra-secure sandboxing in multi-tenant environments.
-- Relies on Redis for event queuing and PostgreSQL for audit trail telemetry.
+- Audit trail telemetry stored in **Amazon DynamoDB**; SARIF reports and patch artifacts in **Amazon S3**.
 
 ### 8.3 Mode C: Security Engineer CLI (`patchforge-cli`)
-- Interactive, local developer experience:
+- Interactive, local developer experience (still uses AWS Bedrock for LLM and S3 for artifact storage):
   ```bash
+  export AWS_PROFILE=patchforge-dev
   patchforge run \
     --sarif ./reports/semgrep.sarif \
     --repo-path ./ \
     --language python \
     --max-iterations 5 \
     --gpg-sign-key 0xDEADBEEF \
-    --auto-pr
+    --auto-pr \
+    --aws-region us-east-1
   ```
+
+### 8.4 Mode D: 🎃 Halloween Dashboard (Web UI)
+- Served via the FastAPI backend (`src/patchforge/api/server.py`) + React frontend (`dashboard/`).
+- Real-time pipeline status updates via WebSocket connections.
+- Historical analytics and vulnerability graveyard powered by **Amazon DynamoDB** queries.
+- Styled with the full Halloween design system (dark theme, skull icons, ghost animations, tombstone cards).
 
 ---
 
@@ -675,4 +822,5 @@ PatchForge AI is designed for three deployment modalities across enterprise envi
 | Version | Date | Author / Architect | Summary of Changes |
 | :--- | :--- | :--- | :--- |
 | **1.0.0** | 2026-11-04 | Principal DevSecOps Architect | Initial Master System Architecture Specification baseline. |
+| **1.1.0** | 2026-11-04 | Principal DevSecOps Architect | Added AWS cloud-native backend (S3, Bedrock, SQS, ECR, DynamoDB) and Halloween-themed Dashboard UI architecture. |
 

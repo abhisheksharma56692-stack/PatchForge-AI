@@ -1,7 +1,7 @@
 # PatchForge AI — Member 1 Task Assignment
 ## 🧠 Role: Code Analysis & AI Intelligence Engine (The Brain)
 **Assigned To:** Member 1  
-**Ownership:** SARIF Ingestion, AST/PDG Slicing, Z3 Formal Verification, AI Agents (Alpha, Beta, Gamma), Prompt Engineering  
+**Ownership:** SARIF Ingestion, AST/PDG Slicing, Z3 Formal Verification, AI Agents (Alpha, Beta, Gamma), Prompt Engineering, **AWS Bedrock LLM Integration**  
 **Independence:** This workstream has **ZERO dependency** on Member 2. All outputs are pure data structures (`dict`, Pydantic models, `str` diffs). Member 1 tests everything using local Python unit tests with mock/fixture inputs — no Docker, no Git API, no CLI needed.
 
 ---
@@ -92,31 +92,33 @@ Member 1 is responsible for generating **every file** listed below. Each file's 
 |---|-----------|---------|
 | 24 | `src/patchforge/agents/__init__.py` | Package init |
 | 25 | `src/patchforge/agents/prompts.py` | All versioned, structured LLM system & user prompts |
-| 26 | `src/patchforge/agents/llm_client.py` | Unified LLM API wrapper (Claude / DeepSeek) with retry & token tracking |
-| 27 | `src/patchforge/agents/test_synthesizer.py` | **Agent Alpha** — Red-Team: generates PoC reproduction security tests |
-| 28 | `src/patchforge/agents/patch_synthesizer.py` | **Agent Beta** — Blue-Team: generates minimal unified diff patches |
-| 29 | `src/patchforge/agents/auditor.py` | **Agent Gamma** — Anti-Tamper: validates diff doesn't touch tests/configs |
-| 30 | `src/patchforge/agents/reflection.py` | Reflection engine: parses sandbox stderr/traces into actionable critique |
+| 26 | `src/patchforge/agents/llm_client.py` | Unified LLM API wrapper (Claude direct API + **AWS Bedrock**) with retry & token tracking |
+| 27 | `src/patchforge/agents/bedrock_client.py` | **AWS Bedrock** inference wrapper — invokes Claude 3.5 Sonnet via `bedrock-runtime` API |
+| 28 | `src/patchforge/agents/test_synthesizer.py` | **Agent Alpha** — Red-Team: generates PoC reproduction security tests |
+| 29 | `src/patchforge/agents/patch_synthesizer.py` | **Agent Beta** — Blue-Team: generates minimal unified diff patches |
+| 30 | `src/patchforge/agents/auditor.py` | **Agent Gamma** — Anti-Tamper: validates diff doesn't touch tests/configs |
+| 31 | `src/patchforge/agents/reflection.py` | Reflection engine: parses sandbox stderr/traces into actionable critique |
 
 ### 2.6 Test Fixtures & Unit Tests
 
 | # | File Path | Purpose |
 |---|-----------|---------|
-| 31 | `tests/fixtures/sarif/semgrep_cwe89_sqli.sarif.json` | Sample Semgrep SARIF for SQL Injection (CWE-89) |
-| 32 | `tests/fixtures/sarif/bandit_cwe22_path_traversal.sarif.json` | Sample Bandit SARIF for Path Traversal (CWE-22) |
-| 33 | `tests/fixtures/sarif/snyk_cwe79_xss.sarif.json` | Sample Snyk SARIF for Cross-Site Scripting (CWE-79) |
-| 34 | `tests/fixtures/repositories/vulnerable_flask_app/app.py` | Intentionally vulnerable Flask app (SQL injection sink) |
-| 35 | `tests/fixtures/repositories/vulnerable_flask_app/requirements.txt` | Dependencies for test fixture app |
-| 36 | `tests/fixtures/repositories/vulnerable_express_app/server.js` | Intentionally vulnerable Express.js app (path traversal) |
-| 37 | `tests/unit/test_sarif_parser.py` | Unit tests for SARIF parsing and normalization |
-| 38 | `tests/unit/test_ast_slicer.py` | Unit tests for Tree-sitter parsing and PDG slicing |
-| 39 | `tests/unit/test_z3_invariants.py` | Unit tests for Z3 formal invariant generation |
-| 40 | `tests/unit/test_agent_alpha.py` | Unit tests for Agent Alpha test synthesis (mocked LLM) |
-| 41 | `tests/unit/test_agent_beta.py` | Unit tests for Agent Beta patch synthesis (mocked LLM) |
-| 42 | `tests/unit/test_agent_gamma.py` | Unit tests for Agent Gamma anti-tamper auditing |
-| 43 | `tests/unit/test_reflection.py` | Unit tests for reflection/critique error parsing |
+| 32 | `tests/fixtures/sarif/semgrep_cwe89_sqli.sarif.json` | Sample Semgrep SARIF for SQL Injection (CWE-89) |
+| 33 | `tests/fixtures/sarif/bandit_cwe22_path_traversal.sarif.json` | Sample Bandit SARIF for Path Traversal (CWE-22) |
+| 34 | `tests/fixtures/sarif/snyk_cwe79_xss.sarif.json` | Sample Snyk SARIF for Cross-Site Scripting (CWE-79) |
+| 35 | `tests/fixtures/repositories/vulnerable_flask_app/app.py` | Intentionally vulnerable Flask app (SQL injection sink) |
+| 36 | `tests/fixtures/repositories/vulnerable_flask_app/requirements.txt` | Dependencies for test fixture app |
+| 37 | `tests/fixtures/repositories/vulnerable_express_app/server.js` | Intentionally vulnerable Express.js app (path traversal) |
+| 38 | `tests/unit/test_sarif_parser.py` | Unit tests for SARIF parsing and normalization |
+| 39 | `tests/unit/test_ast_slicer.py` | Unit tests for Tree-sitter parsing and PDG slicing |
+| 40 | `tests/unit/test_z3_invariants.py` | Unit tests for Z3 formal invariant generation |
+| 41 | `tests/unit/test_bedrock_client.py` | Unit tests for **AWS Bedrock** client (`boto3` mocked) |
+| 42 | `tests/unit/test_agent_alpha.py` | Unit tests for Agent Alpha test synthesis (mocked LLM) |
+| 43 | `tests/unit/test_agent_beta.py` | Unit tests for Agent Beta patch synthesis (mocked LLM) |
+| 44 | `tests/unit/test_agent_gamma.py` | Unit tests for Agent Gamma anti-tamper auditing |
+| 45 | `tests/unit/test_reflection.py` | Unit tests for reflection/critique error parsing |
 
-**Total files owned by Member 1: 43**
+**Total files owned by Member 1: 45**
 
 ---
 
@@ -484,15 +486,26 @@ flowchart TD
 | `networkx` | ≥3.2 | Graph construction for CFG, DDG, PDG |
 | `z3-solver` | ≥4.12 | Microsoft Z3 theorem prover (Python API) |
 | `pydantic` | ≥2.5 | Data model validation and serialization |
-| `anthropic` | ≥0.39 | Claude API client (for Agent LLM calls) |
+| `boto3` | ≥1.34 | **AWS SDK for Python** — AWS Bedrock Runtime client (`bedrock-runtime`) |
+| `botocore` | ≥1.34 | AWS low-level client configuration and error handling |
+| `anthropic` | ≥0.39 | Direct Claude API client (fallback when not using Bedrock) |
 | `openai` | ≥1.50 | DeepSeek-Coder API client (OpenAI-compatible) |
 | `pytest` | ≥8.0 | Unit testing framework |
-| `pytest-mock` | ≥3.14 | LLM call mocking for agent unit tests |
+| `pytest-mock` | ≥3.14 | LLM / AWS Bedrock call mocking for agent unit tests |
 
 **Install command:**
 ```bash
-pip install tree-sitter tree-sitter-languages networkx z3-solver pydantic anthropic openai pytest pytest-mock
+pip install tree-sitter tree-sitter-languages networkx z3-solver pydantic boto3 botocore anthropic openai pytest pytest-mock
 ```
+
+---
+
+## 4.1 🎃 Halloween Theme Touchpoints for Member 1
+
+While Member 2 builds the React UI and CSS styles, **Member 1 formats all data and prompts with Halloween-compatible metadata** so that Member 2's UI can render them seamlessly:
+- **Severity Tagging:** All SARIF findings are mapped to a spooky skull score (`1_skull` to `5_skulls`) inside `VulnerabilityLocation`.
+- **Status Enum:** State statuses use Halloween-aligned descriptors: `AWAKENING` (init), `DISSECTING` (slicing), `CONJURING` (Z3 proof), `DUELING` (adversarial agents), `TOMBSTONE_READY` (passed), `HAUNTED_FAIL` (escalated).
+- **Vulnerability RIP Certificate:** In `prompts.py`, Agent Beta and Alpha templates generate a "Tombstone Inscription" summary (e.g., `⚰️ R.I.P. CWE-89 (SQL Injection) — Neutralized by PatchForge on YYYY-MM-DD`). This is displayed on Member 2's Graveyard page!
 
 ---
 
@@ -505,6 +518,7 @@ Member 1 can verify **every single module** using only local Python:
 pytest tests/unit/test_sarif_parser.py -v
 pytest tests/unit/test_ast_slicer.py -v
 pytest tests/unit/test_z3_invariants.py -v
+pytest tests/unit/test_bedrock_client.py -v  # AWS Bedrock mock tests
 pytest tests/unit/test_agent_alpha.py -v    # LLM calls mocked
 pytest tests/unit/test_agent_beta.py -v     # LLM calls mocked
 pytest tests/unit/test_agent_gamma.py -v    # Pure logic, no LLM
@@ -585,12 +599,12 @@ feedback: ReflectionFeedback = reflector.critique(sandbox_result, iteration=1)
 
 ## 7. Key Deliverable Checklist
 
-- [ ] `models/` package — All 7 Pydantic model files (shared contract)
-- [ ] `ingestion/` package — SARIF parser + 3 scanner adapters
+- [ ] `models/` package — All 7 Pydantic model files (shared contract) with Halloween metadata support
+- [ ] `ingestion/` package — SARIF parser + 3 scanner adapters (with skull severity rating)
 - [ ] `slicing/` package — Parser, CFG, DDG, PDG, Backward Slicer (5 files)
 - [ ] `formal/` package — Z3 translator, invariant engine, boundary checker (3 files)
-- [ ] `agents/` package — Prompts, LLM client, Alpha, Beta, Gamma, Reflection (7 files)
+- [ ] `agents/` package — Prompts, LLM client, **AWS Bedrock client**, Alpha, Beta, Gamma, Reflection (8 files)
 - [ ] Test fixtures — 3 SARIF JSONs + 2 vulnerable app directories
-- [ ] Unit tests — 7 test files covering all subsystems
-- [ ] Smoke test script validating end-to-end SARIF → Slice → Z3 → Agent chain
+- [ ] Unit tests — 8 test files covering all subsystems including AWS Bedrock
+- [ ] Smoke test script validating end-to-end SARIF → Slice → Z3 → AWS Bedrock/Agent chain
 

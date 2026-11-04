@@ -1,55 +1,57 @@
 # PatchForge AI — Member 2 Task Assignment
-## ⚙️ Role: Execution Infrastructure & Delivery Pipeline (The Body)
+## ⚙️ Role: Execution Infrastructure, AWS Cloud Integration & Halloween UI Dashboard (The Body & Face)
 **Assigned To:** Member 2  
-**Ownership:** LangGraph State Machine, Docker Sandbox, Mutation Testing, Delta-SAST, Git/PR Delivery, CLI, Configuration, Docker Images  
-**Independence:** This workstream has **ZERO dependency** on Member 1 during development. Member 2 uses **mock/stub implementations** for all analysis functions (SARIF parser, slicer, Z3, agents) and tests the full infrastructure pipeline independently. At integration time, stubs are replaced with Member 1's real implementations via simple imports.
+**Ownership:** LangGraph State Machine, Docker Sandbox, Mutation Testing, Delta-SAST, Git/PR Delivery, CLI, Configuration, **AWS Cloud Services (S3, SQS, DynamoDB, ECR)**, and the **🎃 Halloween-Themed Operations Dashboard (React + Vite + TailwindCSS + FastAPI)**.  
+**Independence:** This workstream has **ZERO dependency** on Member 1 during development. Member 2 uses **mock/stub implementations** for all code analysis functions (SARIF parser, slicer, Z3, agents) and tests the full execution, AWS, and UI pipeline independently. At integration time, stubs are replaced with Member 1's real implementations via simple imports.
 
 ---
 
 ## 1. Responsibility Summary
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                    MEMBER 2 — OWNERSHIP BOUNDARY                     │
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │          LANGGRAPH STATE MACHINE (Orchestrator)               │   │
-│  │  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌──────────┐  │   │
-│  │  │ Ingest    │─►│ Slice     │─►│ Z3 Solve  │─►│ Agent    │  │   │
-│  │  │ Node      │  │ Node      │  │ Node      │  │ Loop Node│  │   │
-│  │  └───────────┘  └───────────┘  └───────────┘  └────┬─────┘  │   │
-│  │                                                     │        │   │
-│  │                    ┌────────────────────────────────┘        │   │
-│  │                    ▼                                          │   │
-│  │  ┌──────────────────────────────────────────────────────┐    │   │
-│  │  │ Conditional Router: Pass/Fail/Escalate               │    │   │
-│  │  └──────────────────────────────────────────────────────┘    │   │
-│  └──────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │       HERMETIC DOCKER SANDBOX (Execution Environment)        │   │
-│  │  ┌──────────────┐  ┌────────────┐  ┌───────────────────┐   │   │
-│  │  │ Container    │  │ Test       │  │ Cgroup/Network    │   │   │
-│  │  │ Manager      │  │ Runner     │  │ Guard             │   │   │
-│  │  └──────────────┘  └────────────┘  └───────────────────┘   │   │
-│  │  ┌──────────────┐  ┌────────────┐                          │   │
-│  │  │ Mutation     │  │ Delta-SAST │                          │   │
-│  │  │ Runner       │  │ Re-Scanner │                          │   │
-│  │  └──────────────┘  └────────────┘                          │   │
-│  └──────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │          VCS DELIVERY & PR DISPATCH                          │   │
-│  │  ┌──────────────┐  ┌────────────┐  ┌───────────────────┐   │   │
-│  │  │ Git Manager  │  │ GitHub     │  │ PR Formatter      │   │   │
-│  │  │ (Branch/GPG) │  │ API Client │  │ (Markdown V-BOM)  │   │   │
-│  │  └──────────────┘  └────────────┘  └───────────────────┘   │   │
-│  └──────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │  CLI + CONFIG + DOCKERFILES + CI/CD                          │   │
-│  └──────────────────────────────────────────────────────────────┘   │
-└──────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        MEMBER 2 — OWNERSHIP BOUNDARY                         │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │              🎃 HALLOWEEN-THEMED OPERATIONS DASHBOARD                  │  │
+│  │  ┌──────────────┐  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐  │  │
+│  │  │ Haunted Home │  │ Vuln Crypt  │  │ Patch Bench  │  │  Graveyard  │  │  │
+│  │  │ (Overview)   │  │ (Active)    │  │ (Live State) │  │  (R.I.P.)   │  │  │
+│  │  └──────────────┘  └─────────────┘  └──────────────┘  └─────────────┘  │  │
+│  │  ┌──────────────────────────────────────────────────────────────────┐  │  │
+│  │  │ FastAPI Server (WebSocket + REST endpoints)                      │  │  │
+│  │  └──────────────────────────────────────────────────────────────────┘  │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                      │                                       │
+│                                      ▼                                       │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │                     AWS CLOUD INTEGRATION LAYER                        │  │
+│  │  ┌──────────────┐  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐  │  │
+│  │  │  Amazon S3   │  │ Amazon SQS  │  │  DynamoDB    │  │ Amazon ECR  │  │  │
+│  │  │ (Artifacts)  │  │(Event Queue)│  │ (Audit Trail)│  │(Image Repo) │  │  │
+│  │  └──────────────┘  └─────────────┘  └──────────────┘  └─────────────┘  │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                      │                                       │
+│                                      ▼                                       │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │              LANGGRAPH STATE MACHINE (Central Orchestrator)            │  │
+│  │  [Ingest] ──► [Slice] ──► [Z3 Solve] ──► [Agents] ──► [Router Loop]    │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                      │                                       │
+│                                      ▼                                       │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │           HERMETIC DOCKER SANDBOX (Zero-Trust Execution)               │  │
+│  │  ┌──────────────┐  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐  │  │
+│  │  │ Container    │  │ Test Runner │  │ Mutation     │  │ Delta-SAST  │  │  │
+│  │  │ Manager      │  │ (pytest)    │  │ Harness      │  │ Re-Scanner  │  │  │
+│  │  └──────────────┘  └─────────────┘  └──────────────┘  └─────────────┘  │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                      │                                       │
+│                                      ▼                                       │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │          VCS DELIVERY, GPG SIGNING & AUTOMATED PULL REQUESTS           │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -58,761 +60,397 @@
 
 Member 2 is responsible for generating **every file** listed below.
 
-### 2.1 Project Bootstrap & Configuration
+### 2.1 Project Bootstrap, Configuration & CLI
 
 | # | File Path | Purpose |
 |---|-----------|---------|
 | 1 | `src/patchforge/__init__.py` | Root package init (version, top-level exports) |
-| 2 | `src/patchforge/config.py` | Pydantic Settings: env vars, API keys, Docker config, defaults |
-| 3 | `pyproject.toml` | Poetry / Hatch build configuration with all dependencies |
+| 2 | `src/patchforge/config.py` | Pydantic Settings: env vars, AWS credentials/regions, Docker config, defaults |
+| 3 | `pyproject.toml` | Poetry / Hatch build configuration with all production & dev dependencies |
 | 4 | `requirements.txt` | Locked production dependency versions |
-| 5 | `.env.example` | Example environment variable file (API keys, Docker socket, GPG key) |
+| 5 | `.env.example` | Example environment variable file (AWS keys, GitHub token, Docker socket) |
+| 6 | `src/patchforge/cli.py` | Typer/Click CLI: `patchforge run`, `patchforge status`, `--aws-region`, `--auto-pr` |
 
-### 2.2 CLI Interface
+### 2.2 AWS Cloud Services Layer (AWS Integration Requirement)
 
 | # | File Path | Purpose |
 |---|-----------|---------|
-| 6 | `src/patchforge/cli.py` | Typer/Click CLI: `patchforge run`, `patchforge status`, argument parsing |
+| 7 | `src/patchforge/aws/__init__.py` | Package init |
+| 8 | `src/patchforge/aws/s3_client.py` | **Amazon S3** client: uploads/downloads raw SARIF, patch diffs, test logs, V-BOM |
+| 9 | `src/patchforge/aws/sqs_client.py` | **Amazon SQS** client: polls incoming vulnerability event queue from CI scanners |
+| 10 | `src/patchforge/aws/dynamodb_client.py` | **Amazon DynamoDB** client: writes/queries remediation run audit trails & MTTR logs |
+| 11 | `src/patchforge/aws/ecr_client.py` | **Amazon ECR** client: pulls hardened sandbox runtime container images |
 
 ### 2.3 Subsystem: LangGraph State Machine & Orchestrator
 
-> [!IMPORTANT]
-> This is the **central nervous system** of PatchForge. It wires together Member 1's analysis functions and Member 2's sandbox/delivery infrastructure into a single executable state graph.
-
 | # | File Path | Purpose |
 |---|-----------|---------|
-| 7 | `src/patchforge/orchestrator/__init__.py` | Package init |
-| 8 | `src/patchforge/orchestrator/graph.py` | LangGraph `StateGraph` definition — all nodes, edges, conditional routers |
-| 9 | `src/patchforge/orchestrator/nodes.py` | Individual node functions (ingest, slice, solve, synthesize, verify, dispatch) |
-| 10 | `src/patchforge/orchestrator/routers.py` | Conditional edge functions (pass/fail/escalate branching logic) |
-| 11 | `src/patchforge/orchestrator/callbacks.py` | Execution lifecycle callbacks (logging, telemetry, token tracking) |
+| 12 | `src/patchforge/orchestrator/__init__.py` | Package init |
+| 13 | `src/patchforge/orchestrator/graph.py` | LangGraph `StateGraph` definition — all nodes, edges, conditional routers |
+| 14 | `src/patchforge/orchestrator/nodes.py` | Node functions (ingest, slice, solve, synthesize, verify, dispatch) |
+| 15 | `src/patchforge/orchestrator/routers.py` | Conditional edge functions (pass/fail/escalate branching logic) |
+| 16 | `src/patchforge/orchestrator/callbacks.py` | Execution lifecycle callbacks (logging, telemetry, token tracking, WebSocket events) |
 
 ### 2.4 Subsystem: Hermetic Docker Sandbox
 
 | # | File Path | Purpose |
 |---|-----------|---------|
-| 12 | `src/patchforge/sandbox/__init__.py` | Package init |
-| 13 | `src/patchforge/sandbox/container_client.py` | Docker / Podman SDK wrapper: create, start, wait, collect logs, destroy |
-| 14 | `src/patchforge/sandbox/cgroup_manager.py` | Memory (2GB), CPU (2 cores), PID (100) resource quota configuration |
-| 15 | `src/patchforge/sandbox/network_guard.py` | Air-gap verification: validates `--network none` is active post-creation |
-| 16 | `src/patchforge/sandbox/test_runner.py` | In-container test execution engine (pytest, npm test, cargo test, mvn test) |
-| 17 | `src/patchforge/sandbox/mutation_runner.py` | Mutation testing harness: runs mutmut/stryker, collects mutation scores |
-| 18 | `src/patchforge/sandbox/delta_sast.py` | In-sandbox static analysis re-scanner (Semgrep CLI) for post-patch verification |
-| 19 | `src/patchforge/sandbox/patch_applier.py` | Applies `git diff` patches inside sandbox workspace, validates apply success |
+| 17 | `src/patchforge/sandbox/__init__.py` | Package init |
+| 18 | `src/patchforge/sandbox/container_client.py` | Docker / Podman SDK wrapper: create, start, wait, collect logs, destroy |
+| 19 | `src/patchforge/sandbox/cgroup_manager.py` | Memory (2GB), CPU (2 cores), PID (100) resource quota controller |
+| 20 | `src/patchforge/sandbox/network_guard.py` | Air-gap verification: validates `--network none` is strictly active |
+| 21 | `src/patchforge/sandbox/test_runner.py` | In-container test execution engine (pytest, npm test, cargo test, mvn test) |
+| 22 | `src/patchforge/sandbox/mutation_runner.py` | Mutation testing harness: runs mutmut/stryker, collects mutation scores |
+| 23 | `src/patchforge/sandbox/delta_sast.py` | In-sandbox static analysis re-scanner (Semgrep CLI) for post-patch verification |
+| 24 | `src/patchforge/sandbox/patch_applier.py` | Applies `git diff` patches inside sandbox workspace, validates apply success |
 
 ### 2.5 Subsystem: VCS Integration & PR Delivery
 
 | # | File Path | Purpose |
 |---|-----------|---------|
-| 20 | `src/patchforge/delivery/__init__.py` | Package init |
-| 21 | `src/patchforge/delivery/git_manager.py` | Git operations: branch creation, worktree isolation, GPG commit signing |
-| 22 | `src/patchforge/delivery/github_client.py` | GitHub REST/GraphQL API: create PR, add labels, attach review comments |
-| 23 | `src/patchforge/delivery/gitlab_client.py` | GitLab REST API: create MR, add labels, attach notes |
-| 24 | `src/patchforge/delivery/pr_formatter.py` | Rich Markdown PR body generator with Verification Bill of Materials (V-BOM) |
+| 25 | `src/patchforge/delivery/__init__.py` | Package init |
+| 26 | `src/patchforge/delivery/git_manager.py` | Git operations: branch creation, worktree isolation, GPG commit signing |
+| 27 | `src/patchforge/delivery/github_client.py` | GitHub REST/GraphQL API: create PR, add labels, attach review comments |
+| 28 | `src/patchforge/delivery/gitlab_client.py` | GitLab REST API: create MR, add labels, attach notes |
+| 29 | `src/patchforge/delivery/pr_formatter.py` | Rich Markdown PR body generator with Verification Bill of Materials (V-BOM) |
 
-### 2.6 Docker Images & Container Security
-
-| # | File Path | Purpose |
-|---|-----------|---------|
-| 25 | `Dockerfile` | Main PatchForge orchestrator Docker image (for Kubernetes deployment) |
-| 26 | `docker/runtimes/python-3.11.Dockerfile` | Ephemeral sandbox image for Python projects |
-| 27 | `docker/runtimes/node-20.Dockerfile` | Ephemeral sandbox image for Node.js/TypeScript projects |
-| 28 | `docker/runtimes/go-1.22.Dockerfile` | Ephemeral sandbox image for Go projects |
-| 29 | `docker/seccomp-profile.json` | Restricted syscall allowlist profile for container security |
-
-### 2.7 CI/CD Workflows
+### 2.6 Dashboard API Backend (FastAPI)
 
 | # | File Path | Purpose |
 |---|-----------|---------|
-| 30 | `.github/workflows/ci.yml` | GitHub Actions CI: lint, type-check, unit tests, integration tests |
-| 31 | `.github/workflows/security-audit.yml` | Self-SAST: runs Semgrep/Bandit on PatchForge's own codebase |
-| 32 | `.github/pull_request_template.md` | PR template for PatchForge contributions |
+| 30 | `src/patchforge/api/__init__.py` | Package init |
+| 31 | `src/patchforge/api/server.py` | FastAPI application factory, CORS setup, WebSocket mount |
+| 32 | `src/patchforge/api/schemas.py` | Pydantic response models for dashboard metrics and runs |
+| 33 | `src/patchforge/api/routes/__init__.py` | Routes package init |
+| 34 | `src/patchforge/api/routes/dashboard.py` | `GET /api/dashboard` — summary metrics (skulls, cauldrons, ghosts) |
+| 35 | `src/patchforge/api/routes/vulnerabilities.py` | `GET /api/vulns` — active vulnerability findings with skull ratings |
+| 36 | `src/patchforge/api/routes/runs.py` | `GET /api/runs` — DynamoDB run history & tombstone records |
+| 37 | `src/patchforge/api/routes/pipeline.py` | `WebSocket /ws/pipeline` — real-time state machine node transitions |
 
-### 2.8 Documentation
-
-| # | File Path | Purpose |
-|---|-----------|---------|
-| 33 | `README.md` | Project README: overview, quickstart, installation, usage, examples |
-| 34 | `docs/THREAT_MODEL.md` | Full STRIDE threat model document |
-| 35 | `docs/DEPLOYMENT_GUIDE.md` | Enterprise deployment guide (CLI, GitHub Action, Kubernetes) |
-
-### 2.9 Integration Stubs (Used During Independent Development)
-
-> [!NOTE]
-> These stubs let Member 2 develop and test the ENTIRE orchestration pipeline without waiting for Member 1. Each stub returns hardcoded but realistic data matching the shared Pydantic models. At integration time, imports are simply switched from `stubs/` to Member 1's real packages.
+### 2.7 🎃 Halloween-Themed Dashboard Frontend (`dashboard/`)
 
 | # | File Path | Purpose |
 |---|-----------|---------|
-| 36 | `src/patchforge/stubs/__init__.py` | Stub package init |
-| 37 | `src/patchforge/stubs/mock_sarif_parser.py` | Returns hardcoded `VulnerabilityReport` from fixture data |
-| 38 | `src/patchforge/stubs/mock_slicer.py` | Returns hardcoded `ASTContextSlice` (30-line Python snippet) |
-| 39 | `src/patchforge/stubs/mock_z3_engine.py` | Returns hardcoded `FormalInvariant` with sample invariants |
-| 40 | `src/patchforge/stubs/mock_agents.py` | Returns hardcoded `TestArtifact`, `PatchCandidate`, `AuditVerdict` |
+| 38 | `dashboard/package.json` | React 18, Vite, TailwindCSS, Lucide-react, Chart.js dependencies |
+| 39 | `dashboard/vite.config.js` | Vite build & proxy configuration (proxies `/api` to FastAPI) |
+| 40 | `dashboard/tailwind.config.js` | Halloween theme color palette (midnight black, pumpkin orange, coffin purple) |
+| 41 | `dashboard/public/index.html` | HTML entry point with Creepster & JetBrains Mono font imports |
+| 42 | `dashboard/public/favicon-pumpkin.ico` | 🎃 Pumpkin favicon icon |
+| 43 | `dashboard/public/assets/cobweb-texture.svg` | SVG background overlay with subtle cobweb pattern |
+| 44 | `dashboard/public/assets/graveyard-hero.svg` | Animated SVG graveyard hero banner for overview page |
+| 45 | `dashboard/public/assets/ghost-particle.svg` | Floating ghost particle animation sprite |
+| 46 | `dashboard/src/index.jsx` | React root mounting point |
+| 47 | `dashboard/src/App.jsx` | Root router with Halloween dark theme container |
+| 48 | `dashboard/src/theme/halloween.js` | Spooky design tokens: colors, shadows, borders, font families |
+| 49 | `dashboard/src/theme/animations.css` | Keyframes: ghost floating, cauldron bubbling, candle flicker, dripping blood |
+| 50 | `dashboard/src/components/Sidebar.jsx` | Spooky navigation sidebar with cobweb borders & glowing pumpkin logo |
+| 51 | `dashboard/src/components/SkullRating.jsx` | Severity component rendering 1 to 5 skull icons (💀) |
+| 52 | `dashboard/src/components/TombstoneCard.jsx` | "R.I.P." tombstone component for remediated vulnerabilities in Graveyard |
+| 53 | `dashboard/src/components/CauldronGauge.jsx` | Bubbling cauldron circular gauge for CPU, RAM, and mutation score |
+| 54 | `dashboard/src/components/PipelineNode.jsx` | Animated state machine step (glowing orange when active, green on pass) |
+| 55 | `dashboard/src/components/GhostParticles.jsx` | Ambient floating ghost canvas effect overlay |
+| 56 | `dashboard/src/pages/HauntedHome.jsx` | 🏚️ Main overview: active skulls, cauldrons, bat animations, quick stats |
+| 57 | `dashboard/src/pages/VulnCrypt.jsx` | 💀 Table of detected vulnerabilities with filters and MTTR timers |
+| 58 | `dashboard/src/pages/PatchWorkbench.jsx` | 🔬 Real-time state machine live view connected via WebSocket |
+| 59 | `dashboard/src/pages/Graveyard.jsx` | ⚰️ Archive of resolved CVEs displayed as tombstone cards |
+| 60 | `dashboard/src/pages/SandboxDungeon.jsx` | 🧪 Live container telemetry: memory limits, air-gap status, test pass rates |
+| 61 | `dashboard/src/pages/HauntedAnalytics.jsx` | 📊 Dark Halloween-themed charts: MTTR burn-down, patch success rate |
+| 62 | `dashboard/src/services/api.js` | Axios/fetch REST client calling FastAPI backend |
+| 63 | `dashboard/src/services/websocket.js` | WebSocket client with automatic reconnect for live pipeline telemetry |
 
-### 2.10 Integration & End-to-End Tests
+### 2.8 Docker Images & Container Security
 
 | # | File Path | Purpose |
 |---|-----------|---------|
-| 41 | `tests/integration/__init__.py` | Package init |
-| 42 | `tests/integration/test_langgraph_pipeline.py` | Full state graph execution test (using stubs, no real LLM) |
-| 43 | `tests/integration/test_sandbox_execution.py` | Docker sandbox spin-up, patch apply, test run, teardown |
-| 44 | `tests/integration/test_mutation_runner.py` | Mutation engine test with sample project |
-| 45 | `tests/integration/test_git_delivery.py` | Git branch creation, commit, GPG signing (local Git repo) |
-| 46 | `tests/integration/test_pr_formatter.py` | PR Markdown generation with V-BOM content validation |
-| 47 | `tests/integration/test_end_to_end.py` | Full pipeline: SARIF → (stubbed analysis) → Sandbox → PR (local) |
+| 64 | `Dockerfile` | Main PatchForge orchestrator image (includes FastAPI + CLI) |
+| 65 | `docker/runtimes/python-3.11.Dockerfile` | Ephemeral sandbox image for Python projects |
+| 66 | `docker/runtimes/node-20.Dockerfile` | Ephemeral sandbox image for Node.js/TypeScript projects |
+| 67 | `docker/runtimes/go-1.22.Dockerfile` | Ephemeral sandbox image for Go projects |
+| 68 | `docker/seccomp-profile.json` | Restricted syscall allowlist profile for sandbox security |
 
-**Total files owned by Member 2: 47**
+### 2.9 CI/CD & Documentation
+
+| # | File Path | Purpose |
+|---|-----------|---------|
+| 69 | `.github/workflows/ci.yml` | GitHub Actions CI: lint, type-check, unit tests, integration tests |
+| 70 | `.github/workflows/security-audit.yml` | Self-SAST: runs Semgrep/Bandit on PatchForge's own codebase |
+| 71 | `.github/pull_request_template.md` | PR template for PatchForge contributions |
+| 72 | `README.md` | Comprehensive project README with setup instructions and architecture |
+| 73 | `docs/THREAT_MODEL.md` | Full STRIDE threat model document |
+| 74 | `docs/DEPLOYMENT_GUIDE.md` | Enterprise deployment guide (AWS, Kubernetes, CLI, Dashboard) |
+
+### 2.10 Integration Stubs & Tests
+
+| # | File Path | Purpose |
+|---|-----------|---------|
+| 75 | `src/patchforge/stubs/__init__.py` | Stub package init |
+| 76 | `src/patchforge/stubs/mock_sarif_parser.py` | Returns hardcoded `VulnerabilityReport` matching Member 1's models |
+| 77 | `src/patchforge/stubs/mock_slicer.py` | Returns hardcoded `ASTContextSlice` (35-line Python snippet) |
+| 78 | `src/patchforge/stubs/mock_z3_engine.py` | Returns hardcoded `FormalInvariant` with sample boundary constraints |
+| 79 | `src/patchforge/stubs/mock_agents.py` | Returns hardcoded `TestArtifact`, `PatchCandidate`, `AuditVerdict` |
+| 80 | `tests/integration/__init__.py` | Package init |
+| 81 | `tests/integration/test_langgraph_pipeline.py` | Full state graph execution test using stubs |
+| 82 | `tests/integration/test_sandbox_execution.py` | Docker sandbox spin-up, patch apply, test run, teardown |
+| 83 | `tests/integration/test_mutation_runner.py` | Mutation engine test with sample project |
+| 84 | `tests/integration/test_aws_services.py` | **AWS tests** using `moto` (S3 upload/download, SQS poll, DynamoDB write) |
+| 85 | `tests/integration/test_git_delivery.py` | Git branch creation, commit, GPG signing (local Git repo) |
+| 86 | `tests/integration/test_pr_formatter.py` | PR Markdown generation with V-BOM content validation |
+| 87 | `tests/integration/test_dashboard_api.py` | FastAPI TestClient tests for all REST & WebSocket routes |
+| 88 | `tests/integration/test_end_to_end.py` | Full pipeline: S3 SARIF → (stubs) → Sandbox → DynamoDB → PR |
+
+**Total files owned by Member 2: 88**
 
 ---
 
 ## 3. Step-by-Step Working Flow
 
-### Phase 1: Project Bootstrap & Configuration (Day 1–2)
+### Phase 1: Project Bootstrap, AWS Configuration & Stubs (Day 1–2)
 
 ```mermaid
 flowchart TD
-    A["Day 1: Create pyproject.toml with ALL dependencies"] --> B["Day 1: Build config.py (Pydantic Settings)"]
-    B --> C["Day 1: Create .env.example"]
-    C --> D["Day 2: Build CLI skeleton (patchforge run)"]
-    D --> E["Day 2: Create ALL stub/mock modules"]
+    A["Day 1: Create pyproject.toml with all dependencies including boto3 & fastapi"] --> B["Day 1: Build config.py (Pydantic Settings with AWS parameters)"]
+    B --> C["Day 1: Create .env.example with AWS credentials placeholders"]
+    C --> D["Day 2: Build CLI skeleton (patchforge run with --aws-region)"]
+    D --> E["Day 2: Create ALL 4 stub modules (mock_sarif, mock_slicer, mock_z3, mock_agents)"]
     E --> F["Day 2: ✅ Milestone 1 — Project boots, CLI parses args, stubs return data"]
 ```
 
-#### Phase 1 — Detailed Steps
+#### Detailed Steps:
+1. **`pyproject.toml`**: Include `boto3`, `moto`, `docker`, `langgraph`, `fastapi`, `uvicorn`, `gitpython`, `PyGithub`, `typer`, `rich`, `pydantic-settings`.
+2. **`config.py`**: Add AWS configuration fields:
+   ```python
+   aws_region: str = "us-east-1"
+   aws_access_key_id: Optional[SecretStr] = None
+   aws_secret_access_key: Optional[SecretStr] = None
+   s3_artifact_bucket: str = "patchforge-artifacts"
+   sqs_queue_url: Optional[str] = None
+   dynamodb_table_name: str = "PatchForgeAuditTrail"
+   ecr_repository_uri: Optional[str] = None
+   ```
+3. **Stubs Creation**: Create realistic mock objects in `src/patchforge/stubs/` using the shared Pydantic models from `src/patchforge/models/` created by Member 1.
 
-**Step 1.1: Create `pyproject.toml`**
-```
-File: pyproject.toml
+---
 
-Sections:
-  [project]
-    name = "patchforge-ai"
-    version = "0.1.0"
-    python_requires = ">=3.11"
+### Phase 2: LangGraph Orchestrator (Day 3–5)
 
-  [project.dependencies]
-    # Member 1 deps (included so both work from same project)
-    tree-sitter, tree-sitter-languages, networkx, z3-solver
-    # Member 2 deps
-    langgraph, langchain-core, docker, gitpython, PyGithub
-    typer, pydantic, pydantic-settings, rich
-    # Shared
-    anthropic, openai, pytest
-
-  [project.scripts]
-    patchforge = "patchforge.cli:app"
-```
-
-**Step 1.2: Build Configuration Manager**
-```
-File: src/patchforge/config.py
-
-Key class:
-  class PatchForgeSettings(BaseSettings):
-      # LLM
-      llm_provider: str = "anthropic"     # "anthropic" | "deepseek"
-      llm_api_key: SecretStr
-      llm_model: str = "claude-sonnet-4-20250514"
-      llm_temperature: float = 0.1
-
-      # Sandbox
-      docker_socket: str = "unix:///var/run/docker.sock"
-      sandbox_memory_limit: str = "2048m"
-      sandbox_cpu_limit: float = 2.0
-      sandbox_pid_limit: int = 100
-      sandbox_timeout_sec: int = 60
-      sandbox_base_image: str = "patchforge-runner-py311:latest"
-
-      # Git / VCS
-      git_provider: str = "github"        # "github" | "gitlab"
-      github_token: SecretStr
-      gpg_key_id: Optional[str] = None
-      auto_pr: bool = False
-
-      # Orchestrator
-      max_iterations: int = 5
-      mutation_score_threshold: float = 85.0
-
-      class Config:
-          env_prefix = "PATCHFORGE_"
-          env_file = ".env"
+```mermaid
+flowchart TD
+    A["Day 3: Define StateGraph with all 12 nodes and transition edges"] --> B["Day 4: Implement node functions in nodes.py (calling stubs)"]
+    B --> C["Day 5: Implement conditional routers (sandbox_router, loop_bound_router)"]
+    C --> D["Day 5: Implement execution callbacks with WebSocket broadcasting"]
+    D --> E["Day 5: ✅ Milestone 2 — State graph executes end-to-end with stubs"]
 ```
 
-**Step 1.3: Build CLI**
-```
-File: src/patchforge/cli.py
+#### Detailed Steps:
+- Wire the 8 stages into a compiled `StateGraph(RemediationGraphState)`.
+- Use the 4 stubs so the state machine transitions cleanly: `ingest` → `slice` → `z3` → `synthesize` → `sandbox` → `verify` → `dispatch`.
+- Hook `callbacks.py` to broadcast progress updates to the WebSocket server for the Halloween UI.
 
-Framework: Typer (with Rich console output)
+---
 
-Commands:
-  patchforge run \
-    --sarif <path>          # Required: SARIF report file
-    --repo-path <path>      # Required: target repository
-    --language <lang>       # Required: python | javascript | go | java | rust
-    --max-iterations <n>    # Optional: default 5
-    --gpg-sign-key <id>     # Optional: GPG key for commit signing
-    --auto-pr               # Optional: auto-create GitHub/GitLab PR
-    --dry-run               # Optional: show plan without executing
+### Phase 3: Hermetic Docker Sandbox & Mutation Engine (Day 6–8)
 
-  patchforge status         # Show recent remediation runs
-  patchforge version        # Print version info
+```mermaid
+flowchart TD
+    A["Day 6: Build container_client.py (Docker SDK wrapper with --network none)"] --> B["Day 6: Build cgroup_manager.py + network_guard.py"]
+    B --> C["Day 7: Build patch_applier.py + test_runner.py"]
+    C --> D["Day 7: Build mutation_runner.py (mutmut) + delta_sast.py (Semgrep)"]
+    D --> E["Day 8: Build all 3 Dockerfiles (Python, Node, Go) + seccomp-profile.json"]
+    E --> F["Day 8: ✅ Milestone 3 — Sandbox runs isolated, passes clean patches, kills mutants"]
 ```
 
-**Step 1.4: Create All Mock/Stub Modules**
+#### Detailed Steps:
+- Configure containers with `--network none`, rootless user `1001:1001`, `read_only=True`, 2GB RAM cap, and 2.0 CPU cap.
+- Implement `SandboxTestRunner` to execute test suites and return `TestRunResult`.
+- Implement `MutationTestRunner` to parse mutation kill scores against threshold ($\ge 85\%$).
+
+---
+
+### Phase 4: AWS Cloud Integration (Day 9–10)
+
+```mermaid
+flowchart TD
+    A["Day 9: Build s3_client.py (upload SARIF, patch diffs, V-BOM)"] --> B["Day 9: Build sqs_client.py (poll vulnerability event queue)"]
+    B --> C["Day 10: Build dynamodb_client.py (write run audit records)"]
+    C --> D["Day 10: Build ecr_client.py (pull sandbox images from ECR)"]
+    D --> E["Day 10: Write test_aws_services.py using moto mock library"]
+    E --> F["Day 10: ✅ Milestone 4 — All 4 AWS services fully operational & tested"]
 ```
-Files:
-  src/patchforge/stubs/mock_sarif_parser.py
-  src/patchforge/stubs/mock_slicer.py
-  src/patchforge/stubs/mock_z3_engine.py
-  src/patchforge/stubs/mock_agents.py
 
-Each stub:
-  - Imports shared Pydantic models from src/patchforge/models/
-  - Returns hardcoded realistic data matching the model schema
-  - Example: mock_slicer.py returns a 35-line Python slice with a SQL injection sink
+#### Detailed Steps:
+1. **`s3_client.py`**:
+   - `upload_sarif(file_path: str, run_id: str) -> str`
+   - `upload_patch_artifact(patch_diff: str, run_id: str) -> str`
+   - `upload_vbom(vbom_json: str, run_id: str) -> str`
+2. **`sqs_client.py`**:
+   - `poll_vulnerability_events(max_messages: int = 5) -> List[dict]`
+   - `delete_event(receipt_handle: str) -> None`
+3. **`dynamodb_client.py`**:
+   - `record_run(run_id: str, cwe_id: str, status: str, duration: float, pr_url: str) -> None`
+   - `get_run_history(limit: int = 50) -> List[dict]`
+   - `get_graveyard_records() -> List[dict]` (powers the Graveyard page)
+4. **`ecr_client.py`**:
+   - `pull_runtime_image(image_tag: str) -> str`
+5. **AWS Mock Unit Tests**:
+   - Use `@mock_aws` from `moto` to test all S3, SQS, and DynamoDB operations in `tests/integration/test_aws_services.py` without requiring active AWS credentials.
 
-Purpose:
-  - Lets Member 2 develop and test the ENTIRE pipeline without waiting for Member 1
-  - At integration, replace: `from patchforge.stubs.mock_slicer import ...`
-                       with: `from patchforge.slicing.backward_slice import ...`
+---
+
+### Phase 5: 🎃 Halloween Dashboard UI & FastAPI Backend (Day 11–12)
+
+```mermaid
+flowchart TD
+    A["Day 11: Build FastAPI backend (server.py, routes, WebSocket /ws/pipeline)"] --> B["Day 11: Setup Vite + Tailwind with Halloween dark color palette"]
+    B --> C["Day 12: Build UI components (SkullRating, TombstoneCard, CauldronGauge)"]
+    C --> D["Day 12: Build 6 Dashboard Pages (HauntedHome, Crypt, Workbench, Graveyard, Dungeon, Analytics)"]
+    D --> E["Day 12: Connect WebSocket for live pipeline animations"]
+    E --> F["Day 12: ✅ Milestone 5 — Spooky Halloween UI live with real-time updates!"]
+```
+
+#### 🎃 Detailed Design Tokens (`dashboard/src/theme/halloween.js`):
+```javascript
+export const halloweenTheme = {
+  colors: {
+    midnightBlack: '#0d0d0d',
+    coffinPurple: '#1a0a2e',
+    deepGrave: '#120720',
+    pumpkinOrange: '#ff6b00',
+    pumpkinGlow: '#ff8c33',
+    bloodRed: '#8b0000',
+    bloodVibrant: '#ff1a1a',
+    ghostGreen: '#00ff88',
+    slimeGreen: '#39ff14',
+    cauldronYellow: '#ffd700',
+    boneWhite: '#e0d8cc',
+    cobwebGray: '#3a3440',
+  },
+  fonts: {
+    heading: '"Creepster", cursive',
+    mono: '"JetBrains Mono", monospace',
+    body: '"Inter", sans-serif',
+  }
+};
+```
+
+#### Dashboard Pages Implemented:
+1. **`HauntedHome.jsx`**: Overview cards (Active Skulls 💀, In-Progress Bats 🦇, Remediated Ghosts 👻), bubbling cauldron health gauge, live graveyard hero illustration.
+2. **`VulnCrypt.jsx`**: Table of vulnerabilities, each with 1–5 skull severity rating (`<SkullRating count={vuln.skulls} />`), CWE link, and MTTR exposure clock.
+3. **`PatchWorkbench.jsx`**: Interactive pipeline visualizer (`AST Slicing` ➔ `Z3 Solver` ➔ `Agent Synthesis` ➔ `Sandbox` ➔ `PR Dispatch`). Nodes pulsate with orange candle glow when active and flash green on pass.
+4. **`Graveyard.jsx`**: Grid of tombstone cards (`<TombstoneCard />`) for remediated vulnerabilities with "R.I.P. CWE-89", date of remediation, and GitHub PR badge.
+5. **`SandboxDungeon.jsx`**: Ephemeral container monitor with bubbling cauldron gauges for CPU/RAM and live test pass/fail streams.
+6. **`HauntedAnalytics.jsx`**: Spooky dark-purple time-series charts showing MTTR reduction from 60 days to 3 minutes.
+
+---
+
+### Phase 6: VCS Delivery & PR Dispatch (Day 13)
+
+```mermaid
+flowchart TD
+    A["Day 13: Build git_manager.py (branch checkout, GPG signing)"] --> B["Day 13: Build github_client.py + gitlab_client.py"]
+    B --> C["Day 13: Build pr_formatter.py with Halloween-styled V-BOM badges"]
+    C --> D["Day 13: ✅ Milestone 6 — GPG-signed branches and automated PRs created"]
 ```
 
 ---
 
-### Phase 2: LangGraph Orchestrator (Day 3–6)
+### Phase 7: End-to-End Integration & Final Polish (Day 14)
 
 ```mermaid
 flowchart TD
-    A["Day 3: Define StateGraph with all node names & edges"] --> B["Day 4: Implement each node function (calling stubs)"]
-    B --> C["Day 5: Implement conditional routers (pass/fail/escalate)"]
-    C --> D["Day 5: Implement execution callbacks (logging, telemetry)"]
-    D --> E["Day 6: Write test_langgraph_pipeline.py"]
-    E --> F["Day 6: ✅ Milestone 2 — Full graph executes end-to-end with stubs"]
-```
-
-#### Phase 2 — Detailed Steps
-
-**Step 2.1: Define the State Graph**
-```
-File: src/patchforge/orchestrator/graph.py
-
-Key function:
-  def build_remediation_graph() -> StateGraph:
-      graph = StateGraph(RemediationGraphState)
-
-      # Add nodes (each calls a function from nodes.py)
-      graph.add_node("ingest_sarif", ingest_sarif_node)
-      graph.add_node("slice_ast", slice_ast_node)
-      graph.add_node("solve_invariants", solve_invariants_node)
-      graph.add_node("synthesize_test", synthesize_test_node)
-      graph.add_node("synthesize_patch", synthesize_patch_node)
-      graph.add_node("audit_patch", audit_patch_node)
-      graph.add_node("execute_sandbox", execute_sandbox_node)
-      graph.add_node("run_mutation_testing", run_mutation_node)
-      graph.add_node("run_delta_sast", run_delta_sast_node)
-      graph.add_node("reflect_and_critique", reflect_node)
-      graph.add_node("dispatch_pr", dispatch_pr_node)
-      graph.add_node("escalate_to_human", escalate_node)
-
-      # Add linear edges
-      graph.add_edge("ingest_sarif", "slice_ast")
-      graph.add_edge("slice_ast", "solve_invariants")
-      graph.add_edge("solve_invariants", "synthesize_test")
-      graph.add_edge("synthesize_test", "synthesize_patch")
-      graph.add_edge("synthesize_patch", "audit_patch")
-      graph.add_edge("audit_patch", "execute_sandbox")
-
-      # Add conditional edges
-      graph.add_conditional_edges("execute_sandbox", sandbox_router)
-      graph.add_conditional_edges("run_delta_sast", delta_sast_router)
-      graph.add_conditional_edges("reflect_and_critique", loop_bound_router)
-
-      graph.add_edge("run_mutation_testing", "run_delta_sast")
-      graph.add_edge("dispatch_pr", END)
-      graph.add_edge("escalate_to_human", END)
-
-      graph.set_entry_point("ingest_sarif")
-      return graph.compile()
-```
-
-**Step 2.2: Implement Node Functions**
-```
-File: src/patchforge/orchestrator/nodes.py
-
-Each node function signature:
-  def <node_name>(state: RemediationGraphState) -> dict:
-      # Calls Member 1's module (or stub during dev)
-      # Returns partial state update dict
-
-Example node:
-  def ingest_sarif_node(state: RemediationGraphState) -> dict:
-      vulns = parse_sarif_file(state["sarif_raw"]["file_path"])
-      return {
-          "vulnerability": vulns[0].location,
-          "cwe_id": vulns[0].cwe_id,
-          "status": "SLICING"
-      }
-
-  def execute_sandbox_node(state: RemediationGraphState) -> dict:
-      sandbox = HermeticSandboxHarness()
-      result = sandbox.execute_verification_pipeline(
-          repo_path=state["repo_path"],
-          patch_diff=state["candidate_patch_diff"],
-          reproduction_test=state["reproduction_test"],
-          language=state["language"]
-      )
-      return {"sandbox_result": result}
-```
-
-**Step 2.3: Implement Conditional Routers**
-```
-File: src/patchforge/orchestrator/routers.py
-
-Key functions:
-  def sandbox_router(state: RemediationGraphState) -> str:
-      result = state["sandbox_result"]
-      if result.baseline_passed and result.reproduction_defended:
-          return "run_mutation_testing"
-      else:
-          return "reflect_and_critique"
-
-  def delta_sast_router(state: RemediationGraphState) -> str:
-      result = state["sandbox_result"]
-      if result.delta_sast_clean and result.mutation_score >= 85.0:
-          return "dispatch_pr"
-      else:
-          return "reflect_and_critique"
-
-  def loop_bound_router(state: RemediationGraphState) -> str:
-      if state["iteration_count"] >= state["max_iterations"]:
-          return "escalate_to_human"
-      else:
-          return "synthesize_patch"
-```
-
-**Step 2.4: Execution Callbacks**
-```
-File: src/patchforge/orchestrator/callbacks.py
-
-Key class:
-  class PatchForgeCallbackHandler:
-      def on_node_start(self, node_name: str, state: dict) -> None:
-          # Log: "[STEP] Starting node: ingest_sarif"
-      def on_node_end(self, node_name: str, state: dict) -> None:
-          # Log: "[DONE] Node ingest_sarif completed in 1.2s"
-      def on_iteration(self, k: int, max_k: int) -> None:
-          # Log: "[LOOP] Iteration 2/5"
-      def on_error(self, node_name: str, error: Exception) -> None:
-          # Log: "[ERROR] Node execute_sandbox failed: <traceback>"
-```
-
----
-
-### Phase 3: Hermetic Docker Sandbox (Day 7–10)
-
-```mermaid
-flowchart TD
-    A["Day 7: Build container_client.py (Docker SDK wrapper)"] --> B["Day 7: Build cgroup_manager.py + network_guard.py"]
-    B --> C["Day 8: Build patch_applier.py (git apply inside container)"]
-    C --> D["Day 8: Build test_runner.py (pytest/npm/cargo/mvn inside container)"]
-    D --> E["Day 9: Build mutation_runner.py (mutmut/stryker harness)"]
-    E --> F["Day 9: Build delta_sast.py (Semgrep re-scan inside container)"]
-    F --> G["Day 10: Build all 3 Dockerfiles (Python, Node, Go sandboxes)"]
-    G --> H["Day 10: Build seccomp-profile.json"]
-    H --> I["Day 10: Write test_sandbox_execution.py + test_mutation_runner.py"]
-    I --> J["Day 10: ✅ Milestone 3 — Sandbox spins up, applies patch, runs tests, destroys"]
-```
-
-#### Phase 3 — Detailed Steps
-
-**Step 3.1: Container Client (Core Sandbox Manager)**
-```
-File: src/patchforge/sandbox/container_client.py
-
-Input:  repo_mount_dir (str), patch_diff (str), command (str)
-Output: SandboxResult
-
-Key class:
-  class HermeticSandboxHarness:
-      def __init__(self, settings: PatchForgeSettings)
-      def create_container(self, repo_dir: str) -> Container
-      def execute_in_sandbox(self, repo_dir: str, command: str, timeout: int = 60) -> SandboxResult
-      def execute_verification_pipeline(self, repo_path, patch_diff, reproduction_test, language) -> SandboxResult
-      def cleanup(self, container: Container) -> None
-
-Container creation parameters:
-  - image: settings.sandbox_base_image
-  - network_mode: "none"              # AIR-GAPPED
-  - mem_limit: "2048m"                # 2GB RAM cap
-  - nano_cpus: 2_000_000_000          # 2.0 CPU cap
-  - pids_limit: 100                   # Fork-bomb protection
-  - cap_drop: ["ALL"]                 # Zero Linux capabilities
-  - security_opt: ["no-new-privileges:true"]
-  - read_only: True                   # Read-only root filesystem
-  - tmpfs: {"/tmp": "size=512m", "/run": "size=64m"}
-  - user: "1001:1001"                 # Non-root execution
-```
-
-**Step 3.2: Resource Quota Manager**
-```
-File: src/patchforge/sandbox/cgroup_manager.py
-
-Key class:
-  class CgroupResourceManager:
-      def configure_limits(self, memory_mb: int, cpu_cores: float, pid_limit: int) -> dict:
-          # Returns Docker-compatible resource constraint dict
-      def validate_enforcement(self, container: Container) -> bool:
-          # Verifies cgroup limits are actually applied post-creation
-```
-
-**Step 3.3: Network Isolation Guard**
-```
-File: src/patchforge/sandbox/network_guard.py
-
-Key class:
-  class NetworkIsolationGuard:
-      def verify_air_gap(self, container: Container) -> bool:
-          # Inspects container network settings
-          # Confirms network_mode == "none"
-          # Optionally runs: `container.exec_run("curl -s http://example.com")` → must FAIL
-      def report_violation(self, container: Container) -> str:
-          # Returns human-readable violation report if network is detected
-```
-
-**Step 3.4: Patch Applier**
-```
-File: src/patchforge/sandbox/patch_applier.py
-
-Key class:
-  class PatchApplier:
-      def apply_diff(self, container: Container, diff_content: str) -> bool:
-          # Writes diff to /tmp/candidate.patch inside container
-          # Runs: git apply /tmp/candidate.patch
-          # Returns True if applied cleanly, False if conflicts
-      def write_test_file(self, container: Container, test: TestArtifact) -> None:
-          # Writes reproduction test file into the container workspace
-```
-
-**Step 3.5: In-Container Test Runner**
-```
-File: src/patchforge/sandbox/test_runner.py
-
-Key class:
-  class SandboxTestRunner:
-      def run_baseline_tests(self, container: Container, language: str) -> TestRunResult:
-          # python → "pytest --tb=short -q"
-          # javascript → "npm test"
-          # go → "go test ./..."
-          # java → "mvn test -q"
-          # rust → "cargo test"
-      def run_reproduction_test(self, container: Container, test: TestArtifact) -> TestRunResult:
-          # Runs the PoC test independently
-          # Expected: FAIL on unpatched code, PASS (defended) on patched code
-      def collect_results(self, container: Container) -> TestRunResult:
-          # Parses stdout/stderr, exit codes, individual test pass/fail counts
-```
-
-**Step 3.6: Mutation Testing Runner**
-```
-File: src/patchforge/sandbox/mutation_runner.py
-
-Key class:
-  class MutationTestRunner:
-      def run_mutations(self, container: Container, target_file: str, language: str) -> MutationReport:
-          # Python → "mutmut run --paths-to-mutate=<target_file>"
-          # JS/TS → "npx stryker run --mutate=<target_file>"
-      def calculate_mutation_score(self, report: MutationReport) -> float:
-          # MS = killed / (total - equivalent) * 100
-      def meets_threshold(self, score: float, threshold: float = 85.0) -> bool:
-```
-
-**Step 3.7: Delta-SAST Re-Scanner**
-```
-File: src/patchforge/sandbox/delta_sast.py
-
-Key class:
-  class DeltaSASTScanner:
-      def rescan(self, container: Container, original_rule_id: str) -> DeltaSASTReport:
-          # Runs: "semgrep --config auto --sarif -o /tmp/rescan.sarif ."
-          # Parses output SARIF
-      def verify_cwe_eliminated(self, report: DeltaSASTReport, target_rule_id: str) -> bool:
-          # Returns True ONLY if original rule_id has 0 findings
-      def check_no_new_findings(self, report: DeltaSASTReport, baseline_count: int) -> bool:
-          # Returns True if total findings <= baseline (no new vulnerabilities introduced)
-```
-
-**Step 3.8: Sandbox Dockerfiles**
-```
-File: docker/runtimes/python-3.11.Dockerfile
-
-  FROM python:3.11-slim-bookworm
-  RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-  RUN pip install --no-cache-dir pytest mutmut semgrep bandit
-  RUN useradd -m -u 1001 sandbox
-  USER sandbox
-  WORKDIR /workspace
-
-File: docker/runtimes/node-20.Dockerfile
-
-  FROM node:20-slim
-  RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-  RUN npm install -g @stryker-mutator/core semgrep
-  RUN useradd -m -u 1001 sandbox
-  USER sandbox
-  WORKDIR /workspace
-
-File: docker/runtimes/go-1.22.Dockerfile
-
-  FROM golang:1.22-bookworm
-  RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-  RUN go install github.com/avito-tech/go-mutesting/cmd/go-mutesting@latest
-  RUN useradd -m -u 1001 sandbox
-  USER sandbox
-  WORKDIR /workspace
-```
-
-**Step 3.9: Seccomp Profile**
-```
-File: docker/seccomp-profile.json
-
-  Restricted syscall allowlist:
-  - ALLOW: read, write, open, close, stat, fstat, mmap, mprotect, munmap,
-           brk, clone, execve, exit_group, wait4, getpid, getuid, getgid
-  - DENY: mount, umount, ptrace, reboot, swapon, swapoff, init_module,
-          delete_module, socket (selectively), accept, listen, bind, connect
-```
-
----
-
-### Phase 4: VCS Delivery & PR Dispatch (Day 11–12)
-
-```mermaid
-flowchart TD
-    A["Day 11: Build git_manager.py (branching + GPG signing)"] --> B["Day 11: Build github_client.py (PR API)"]
-    B --> C["Day 11: Build gitlab_client.py (MR API)"]
-    C --> D["Day 12: Build pr_formatter.py (Markdown V-BOM generator)"]
-    D --> E["Day 12: Write test_git_delivery.py + test_pr_formatter.py"]
-    E --> F["Day 12: ✅ Milestone 4 — Git branch + signed commit + rich PR generated locally"]
-```
-
-#### Phase 4 — Detailed Steps
-
-**Step 4.1: Git Manager**
-```
-File: src/patchforge/delivery/git_manager.py
-
-Key class:
-  class GitManager:
-      def __init__(self, repo_path: str, gpg_key_id: Optional[str] = None)
-      def create_remediation_branch(self, cwe_id: str) -> str:
-          # Creates: patchforge/remediate-cwe-89-<short_hash>
-      def apply_and_stage(self, diff: str, test_file: TestArtifact) -> None:
-          # Applies patch diff, stages modified files + new test file
-      def create_signed_commit(self, message: str) -> str:
-          # Creates GPG-signed commit, returns commit SHA
-      def push_branch(self, branch_name: str, remote: str = "origin") -> None:
-```
-
-**Step 4.2: GitHub Client**
-```
-File: src/patchforge/delivery/github_client.py
-
-Key class:
-  class GitHubPRClient:
-      def __init__(self, token: str, repo_full_name: str)
-      def create_pull_request(self, branch: str, title: str, body: str, labels: List[str]) -> str:
-          # Returns PR URL
-      def add_review_comment(self, pr_number: int, comment: str) -> None
-      def attach_verification_badge(self, pr_number: int, status: str) -> None
-```
-
-**Step 4.3: GitLab Client**
-```
-File: src/patchforge/delivery/gitlab_client.py
-
-Key class:
-  class GitLabMRClient:
-      def __init__(self, token: str, project_id: str)
-      def create_merge_request(self, branch: str, title: str, description: str, labels: List[str]) -> str:
-      def add_note(self, mr_iid: int, note: str) -> None
-```
-
-**Step 4.4: PR Body Formatter (Verification Bill of Materials)**
-```
-File: src/patchforge/delivery/pr_formatter.py
-
-Key class:
-  class PRFormatter:
-      def format_pr_body(self, state: RemediationGraphState) -> str:
-          # Generates rich Markdown PR body containing:
-          # 1. 🛡️ Vulnerability Summary (CWE, severity, file, line)
-          # 2. 🔬 AST Slice Analysis (what code was analyzed)
-          # 3. 🧮 Z3 Formal Invariants (mathematical proofs)
-          # 4. 🧪 Sandbox Verification Matrix:
-          #    - Baseline Tests: ✅ 142/142 passed
-          #    - Reproduction PoC: ✅ Attack neutralized
-          #    - Mutation Score: ✅ 92.3% (threshold: 85%)
-          #    - Delta-SAST: ✅ 0 findings (original CWE eliminated)
-          # 5. 📝 Diff Explanation
-          # 6. 📊 Execution Telemetry (timing, iterations, tokens used)
-
-      def format_pr_title(self, cwe_id: str, file_path: str) -> str:
-          # "[PatchForge] Remediation for CWE-89: SQL Injection in backend/views/user.py"
-```
-
----
-
-### Phase 5: CI/CD, Documentation & Integration (Day 13–14)
-
-```mermaid
-flowchart TD
-    A["Day 13: Build GitHub Actions CI workflow"] --> B["Day 13: Build security-audit workflow"]
-    B --> C["Day 13: Write README.md + DEPLOYMENT_GUIDE.md + THREAT_MODEL.md"]
-    C --> D["Day 14: Write test_end_to_end.py (full pipeline with stubs)"]
-    D --> E["Day 14: Replace stubs with Member 1's real modules"]
-    E --> F["Day 14: ✅ FINAL MILESTONE — Full pipeline runs end-to-end"]
-```
-
-#### Phase 5 — Detailed Steps
-
-**Step 5.1: GitHub Actions CI**
-```
-File: .github/workflows/ci.yml
-
-Jobs:
-  lint:
-    - ruff check src/
-    - mypy src/patchforge/ --strict
-  test:
-    - pytest tests/unit/ -v
-    - pytest tests/integration/ -v --timeout=120
-  build:
-    - docker build -t patchforge-ai .
-    - docker build -f docker/runtimes/python-3.11.Dockerfile -t patchforge-runner-py311 .
-```
-
-**Step 5.2: Security Self-Audit**
-```
-File: .github/workflows/security-audit.yml
-
-  - Run Semgrep on src/patchforge/
-  - Run Bandit on src/patchforge/
-  - Fail CI if any HIGH/CRITICAL findings detected
-```
-
-**Step 5.3: README.md**
-```
-File: README.md
-
-Sections:
-  - Project Overview & Architecture Diagram
-  - Quick Start (3 commands to run)
-  - Installation Guide
-  - CLI Usage Examples
-  - Configuration Reference (.env variables)
-  - Deployment Options (CLI, GitHub Action, Kubernetes)
-  - Contributing Guide
-  - License
+    A["Day 14: Switch stubs to Member 1's real modules (models, slicer, z3, agents)"] --> B["Day 14: Run full end-to-end integration test (SARIF → AWS S3 → Sandbox → DynamoDB → PR)"]
+    B --> C["Day 14: Verify Halloween UI reflects real pipeline execution in real time"]
+    C --> D["Day 14: ✅ FINAL MILESTONE — PatchForge AI fully operational!"]
 ```
 
 ---
 
 ## 4. Technology Stack (Member 2 Only)
 
-| Library | Version | Purpose |
-|---------|---------|---------|
-| `langgraph` | ≥0.2 | State machine orchestration framework |
-| `langchain-core` | ≥0.3 | Base abstractions for agent state |
-| `docker` | ≥7.0 | Docker SDK for Python (container management) |
-| `gitpython` | ≥3.1 | Programmatic Git operations (branch, commit, push) |
-| `PyGithub` | ≥2.1 | GitHub REST API client |
-| `python-gitlab` | ≥4.0 | GitLab REST API client |
-| `typer` | ≥0.12 | CLI framework with rich help |
-| `rich` | ≥13.0 | Terminal formatting and progress bars |
-| `pydantic` | ≥2.5 | Data validation (shared with Member 1) |
-| `pydantic-settings` | ≥2.2 | Environment-based configuration |
-| `pytest` | ≥8.0 | Testing framework |
-| `pytest-docker` | ≥3.0 | Docker integration testing fixtures |
+| Category | Library | Version | Purpose |
+|----------|---------|---------|---------|
+| **AWS Cloud** | `boto3` | ≥1.34 | AWS SDK for Python (S3, SQS, DynamoDB, ECR) |
+| **AWS Testing** | `moto[s3,sqs,dynamodb]` | ≥5.0 | Complete in-memory AWS mock suite for unit tests |
+| **Orchestration**| `langgraph` | ≥0.2 | Stateful directed graph multi-agent orchestrator |
+| **Orchestration**| `langchain-core` | ≥0.3 | State graph abstractions |
+| **Container** | `docker` | ≥7.0 | Docker SDK for Python (hermetic container sandbox) |
+| **Git / VCS** | `gitpython` | ≥3.1 | Programmatic Git operations, worktrees, GPG signing |
+| **Git / VCS** | `PyGithub` | ≥2.1 | GitHub REST API client for PR creation |
+| **CLI** | `typer` | ≥0.12 | CLI builder with rich terminal output |
+| **CLI** | `rich` | ≥13.0 | Spooky colored terminal output & progress bars |
+| **Backend API** | `fastapi` | ≥0.110 | REST & WebSocket API backend for dashboard |
+| **Backend API** | `uvicorn` | ≥0.29 | High-performance ASGI web server |
+| **Backend API** | `websockets`| ≥12.0 | Real-time bi-directional pipeline streaming |
+| **Frontend** | `react` | ≥18.2 | Dashboard UI framework |
+| **Frontend** | `vite` | ≥5.0 | Blazing fast frontend build tool & dev server |
+| **Frontend** | `tailwindcss` | ≥3.4 | Utility-first CSS configured with Halloween palette |
+| **Frontend** | `lucide-react`| ≥0.350 | Icons (skull, ghost, flame, shield, terminal) |
+| **Testing** | `pytest` | ≥8.0 | Test runner |
+| **Testing** | `pytest-asyncio` | ≥0.23 | Async tests for FastAPI and WebSockets |
 
-**Install command:**
+**Install command (Python backend):**
 ```bash
-pip install langgraph langchain-core docker gitpython PyGithub python-gitlab typer rich pydantic pydantic-settings pytest pytest-docker
+pip install boto3 "moto[s3,sqs,dynamodb]" langgraph langchain-core docker gitpython PyGithub typer rich fastapi uvicorn websockets pydantic pydantic-settings pytest pytest-asyncio
+```
+
+**Install command (React dashboard):**
+```bash
+cd dashboard && npm install
 ```
 
 ---
 
-## 5. How to Test Everything Independently (No Member 1 Code Needed)
+## 5. How to Test Everything Independently
 
-Member 2 can verify the **entire pipeline** using stubs:
+Member 2 can verify the **entire infrastructure, AWS integration, and Halloween UI** without waiting for Member 1:
 
 ```bash
-# Test the LangGraph state machine (stubs for analysis, real sandbox)
+# 1. Test LangGraph state machine with stubs
 pytest tests/integration/test_langgraph_pipeline.py -v
 
-# Test Docker sandbox (requires Docker daemon running)
+# 2. Test Docker sandbox (requires Docker daemon)
 pytest tests/integration/test_sandbox_execution.py -v
 
-# Test mutation engine
-pytest tests/integration/test_mutation_runner.py -v
+# 3. Test AWS Cloud Services (S3, SQS, DynamoDB mocked via moto — NO AWS account needed!)
+pytest tests/integration/test_aws_services.py -v
 
-# Test Git operations (creates local test repo, no push)
+# 4. Test FastAPI dashboard endpoints & WebSocket
+pytest tests/integration/test_dashboard_api.py -v
+
+# 5. Test Git delivery & PR formatter
 pytest tests/integration/test_git_delivery.py -v
-
-# Test PR body formatting
 pytest tests/integration/test_pr_formatter.py -v
 
-# Full end-to-end with stubs
-pytest tests/integration/test_end_to_end.py -v
-
-# Run all
+# 6. Run all tests at once
 pytest tests/integration/ -v --timeout=120
 ```
 
-### Quick Smoke Test (End-to-End with Stubs):
-```python
-from patchforge.orchestrator.graph import build_remediation_graph
-from patchforge.models.state import RemediationGraphState
+### Launch the 🎃 Halloween Dashboard Locally:
+```bash
+# Terminal 1: Launch FastAPI Backend
+uvicorn patchforge.api.server:app --host 0.0.0.0 --port 8000 --reload
 
-# Build the LangGraph state machine
-graph = build_remediation_graph(use_stubs=True)  # Uses mock modules
-
-# Create initial state
-initial_state: RemediationGraphState = {
-    "sarif_raw": {"file_path": "tests/fixtures/sarif/semgrep_cwe89_sqli.sarif.json"},
-    "repo_path": "tests/fixtures/repositories/vulnerable_flask_app/",
-    "language": "python",
-    "iteration_count": 0,
-    "max_iterations": 5,
-    "error_feedback_history": [],
-    "status": "INITIALIZING"
-}
-
-# Execute the full pipeline
-final_state = graph.invoke(initial_state)
-print(f"Status: {final_state['status']}")           # "SUCCEEDED" or "ESCALATED"
-print(f"PR URL: {final_state.get('pr_url', 'N/A')}")
-print(f"Iterations: {final_state['iteration_count']}")
+# Terminal 2: Launch React Frontend
+cd dashboard && npm run dev
+# Open browser at: http://localhost:5173
 ```
 
 ---
 
 ## 6. Interface Contract with Member 1
 
-Member 2 **consumes** the following function signatures that Member 1 implements. During development, Member 2 uses stubs returning hardcoded data:
+Member 2 consumes Member 1's code through this clean interface. During development, Member 2 uses stubs:
 
 ```python
-# ═══════════════════════════════════════════════════════════════
-# WHAT MEMBER 2 IMPORTS FROM MEMBER 1 (stubs during dev, real at integration)
-# ═══════════════════════════════════════════════════════════════
+# In src/patchforge/orchestrator/nodes.py:
+USE_STUBS = os.getenv("PATCHFORGE_USE_STUBS", "false").lower() == "true"
 
-# In orchestrator/nodes.py:
 if USE_STUBS:
     from patchforge.stubs.mock_sarif_parser import parse_sarif_file
     from patchforge.stubs.mock_slicer import BackwardTaintSlicer
     from patchforge.stubs.mock_z3_engine import SMTInvariantVerifier
     from patchforge.stubs.mock_agents import TestSynthesizerAgent, PatchSynthesizerAgent, AntiTamperAuditor, ReflectionEngine
 else:
-    # ↓↓↓ REAL IMPORTS (switch to these at integration) ↓↓↓
+    # Real implementations imported from Member 1:
     from patchforge.ingestion.sarif_parser import parse_sarif_file
     from patchforge.slicing.backward_slice import BackwardTaintSlicer
     from patchforge.formal.invariant_engine import SMTInvariantVerifier
@@ -822,21 +460,28 @@ else:
     from patchforge.agents.reflection import ReflectionEngine
 ```
 
-> [!TIP]
-> At integration time, Member 2 only changes a single flag (`USE_STUBS = False`) or updates import paths. The function signatures are identical because both members work from the same shared Pydantic models.
-
 ---
 
 ## 7. Key Deliverable Checklist
 
-- [ ] `config.py` + `pyproject.toml` + `.env.example` — Project bootstrap
-- [ ] `cli.py` — Full Typer CLI with `run`, `status`, `version` commands
-- [ ] `orchestrator/` package — LangGraph state graph, nodes, routers, callbacks (4 files)
-- [ ] `sandbox/` package — Container client, cgroup, network guard, test runner, mutation, delta-SAST, patch applier (8 files)
-- [ ] `delivery/` package — Git manager, GitHub client, GitLab client, PR formatter (4 files)
-- [ ] `stubs/` package — 4 mock modules for independent development
-- [ ] `docker/runtimes/` — 3 Dockerfiles + 1 seccomp profile
-- [ ] `.github/workflows/` — CI + security-audit YAML + PR template
-- [ ] `README.md` + `docs/THREAT_MODEL.md` + `docs/DEPLOYMENT_GUIDE.md`
-- [ ] Integration tests — 7 test files covering graph, sandbox, git, PR, end-to-end
-
+- [ ] Project bootstrap: `config.py` (with AWS settings), `pyproject.toml`, `.env.example`, `cli.py`
+- [ ] **AWS Cloud Integration (`src/patchforge/aws/`)**:
+  - [ ] `s3_client.py` (SARIF, diffs, V-BOM persistence)
+  - [ ] `sqs_client.py` (vulnerability event queue consumer)
+  - [ ] `dynamodb_client.py` (audit trail & graveyard records)
+  - [ ] `ecr_client.py` (sandbox container image pull)
+- [ ] **LangGraph Orchestrator (`src/patchforge/orchestrator/`)**:
+  - [ ] `graph.py`, `nodes.py`, `routers.py`, `callbacks.py` (with WebSocket broadcasting)
+- [ ] **Hermetic Sandbox (`src/patchforge/sandbox/`)**:
+  - [ ] `container_client.py`, `cgroup_manager.py`, `network_guard.py`, `test_runner.py`, `mutation_runner.py`, `delta_sast.py`, `patch_applier.py`
+- [ ] **FastAPI Dashboard Backend (`src/patchforge/api/`)**:
+  - [ ] `server.py`, `schemas.py`, and routes for dashboard, vulns, runs, WebSocket
+- [ ] **🎃 Halloween Operations Dashboard (`dashboard/`)**:
+  - [ ] React 18 + Vite setup with Halloween theme provider and Creepster font
+  - [ ] Components: `SkullRating`, `TombstoneCard`, `CauldronGauge`, `PipelineNode`, `GhostParticles`
+  - [ ] Pages: `HauntedHome`, `VulnCrypt`, `PatchWorkbench`, `Graveyard`, `SandboxDungeon`, `HauntedAnalytics`
+- [ ] **VCS Integration (`src/patchforge/delivery/`)**:
+  - [ ] `git_manager.py`, `github_client.py`, `gitlab_client.py`, `pr_formatter.py`
+- [ ] Dockerfiles: Python, Node, Go sandbox runtimes + `seccomp-profile.json`
+- [ ] Integration tests: 8 test files including `test_aws_services.py` and `test_dashboard_api.py`
+- [ ] Documentation: `README.md`, `docs/DEPLOYMENT_GUIDE.md`, `docs/THREAT_MODEL.md`

@@ -190,6 +190,8 @@ Where $\mathbb{I}[\cdot]$ is the indicator function. The maximum iteration bound
 3. **Hermetic Sandbox Execution:** Automated spinning up of micro-containers (Docker / Podman via SDK) with pre-installed toolchains, isolated network interfaces, and strict memory/CPU limits.
 4. **Automated Unit Test & Linter Execution:** Capability to run `pytest`, `npm test`, `cargo test`, or `mvn test` inside the sandbox and capture execution telemetry (`stdout`, `stderr`, return codes).
 5. **Automated Git Integration:** Seamless branch creation (`git checkout -b autoheal/cwe-89-fix`), atomic git commit generation, and GitHub/GitLab Pull Request publishing via REST APIs.
+6. **AWS Cloud-Native Resilience:** Compulsory enterprise cloud integration utilizing **Amazon S3** (artifact persistence), **AWS Bedrock** (managed LLM inference), **Amazon SQS** (event streaming), and **Amazon DynamoDB** (audit trail logging).
+7. **🎃 Halloween-Themed Operations UI:** Real-time visual monitoring dashboard featuring a dark Halloween design system (pumpkin orange, midnight black, skull severity ratings, bubbling cauldron gauges, and a tombstone-styled Vulnerability Graveyard).
 
 ### 8.2. Non-Functional & Security Criteria
 * **Air-Gapped Sandboxing:** Remediation containers must run with disabled external networking (`--network none`) to prevent malicious dependencies from executing data exfiltration or reverse-shell payloads during build validation.
