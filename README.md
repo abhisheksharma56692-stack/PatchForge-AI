@@ -4,6 +4,15 @@
 
 ---
 
+## 📑 Core Documentation & Deliverables
+
+* **🏆 [MVP Specification & Architecture Audit (MVP.md)](./MVP.md):** Complete Minimum Viable Product specification, 8-stage pipeline walk-through, benchmark matrix, and test verification report.
+* **📊 [Downloadable Presentation Pitch Deck (.pptx)](./PatchForge_AI_Pitch_Deck.pptx):** 10-slide enterprise deck covering Idea, Problem, Solution, Architecture, Multi-Agent Duel, Hermetic Sandbox, AWS Integration, Halloween UI, and Implementation.
+* **📐 [Comprehensive Architecture Blueprint (ARCHITECTURE.md)](./ARCHITECTURE.md):** C4 diagrams, STRIDE threat model, and technical specifications.
+* **👥 [Team Division Task Sheets](./MEMBER_1_TASKS.md):** Independent breakdown for Member 1 (AI & Analysis - 45 files) and Member 2 (Infra & UI - 88 files).
+
+---
+
 ## 🌟 Key Features
 
 1. **Symbolic AST & PDG Slicing:** Uses Tree-sitter and NetworkX to generate Program Dependence Graphs (PDGs), reducing transmitted code by $80\text{--}90\%$ to eliminate context bloat and hallucination.
@@ -18,31 +27,33 @@
 
 ## 🚀 Quick Start
 
-### 1. Installation
-```bash
-pip install -r requirements.txt
-pip install -e .
+### 1. One-Click Launchers (Recommended)
+```powershell
+# Option A: Launch Full Stack (Backend API + Database + Frontend UI)
+.\start_all.bat
+
+# Option B: Run Interactive Terminal MVP Remediation Demo
+.\start_mvp_demo.bat
 ```
 
-### 2. Run Autonomous Remediation CLI
+### 2. Manual Startup
+```bash
+# Terminal 1: Backend API & WebSocket Engine
+.\start_backend.bat
+
+# Terminal 2: Halloween React Operations Dashboard
+.\start_frontend.bat
+```
+- **Operations Dashboard:** [http://localhost:5173](http://localhost:5173)
+- **Backend API & Swagger Docs:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+### 3. Run Autonomous Remediation CLI
 ```bash
 patchforge run \
   --sarif ./tests/fixtures/sarif/semgrep_cwe89_sqli.sarif.json \
   --repo-path ./ \
   --language python \
   --aws-region us-east-1
-```
-
-### 3. Launch the 🎃 Halloween Dashboard
-```bash
-# Terminal 1: Backend API Server
-uvicorn patchforge.api.server:app --host 0.0.0.0 --port 8000 --reload
-
-# Terminal 2: React Frontend UI
-cd dashboard
-npm install
-npm run dev
-# Open browser at: http://localhost:5173
 ```
 
 ---

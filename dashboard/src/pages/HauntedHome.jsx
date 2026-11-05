@@ -16,6 +16,7 @@ import {
   Activity,
   CheckCircle2,
   Sparkles,
+  Download,
 } from 'lucide-react';
 
 export const HauntedHome = ({ onNavigateToWorkbench }) => {
@@ -90,6 +91,15 @@ export const HauntedHome = ({ onNavigateToWorkbench }) => {
             >
               {isUploading ? 'Summoning Agents...' : 'Summon Curse Breaker (Quick Run)'}
             </Button>
+            <a
+              href="/PatchForge_AI_Pitch_Deck.pptx"
+              download="PatchForge_AI_Pitch_Deck.pptx"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-deepGrave hover:bg-coffinPurple/60 border border-phantomPurple/60 text-phantomPurple hover:text-white font-mono text-xs font-semibold transition-all shadow-sm"
+              title="Download PowerPoint Presentation"
+            >
+              <Download className="w-4 h-4 text-pumpkinOrange" />
+              <span>Download Pitch Deck (.pptx)</span>
+            </a>
             {uploadSuccess && (
               <span className="flex items-center gap-1.5 text-xs font-mono text-ghostGreen font-semibold animate-bounce">
                 <CheckCircle2 className="w-4 h-4" />
