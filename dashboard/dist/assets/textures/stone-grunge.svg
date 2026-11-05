@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" opacity="0.15">
+  <filter id="stoneTexture">
+    <feTurbulence type="turbulence" baseFrequency="0.05" numOctaves="5" result="grain"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0.8  0 0 0 0 0.7  0 0 0 0 0.9  0 0 0 1 0"/>
+  </filter>
+  <rect width="400" height="400" filter="url(#stoneTexture)" fill="#3b1d5c"/>
+  <path d="M50,80 L80,120 M200,40 L190,110 M320,200 L290,260" stroke="#f3e8ff" stroke-width="1.5" opacity="0.3"/>
+</svg>
+

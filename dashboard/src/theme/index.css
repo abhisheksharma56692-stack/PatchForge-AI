@@ -1,0 +1,46 @@
+@import './animations.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0a070f;
+    color: #f3e8ff;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Cyber-Gothic Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #12091c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3b1d5c;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff6a00;
+  box-shadow: 0 0 10px rgba(255, 106, 0, 0.5);
+}
+
+/* Glassmorphism Panel Utility */
+.glass-panel {
+  background-color: rgba(29, 14, 46, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 29, 92, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(10, 7, 15, 0.7);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(255, 106, 0, 0.8);
+  box-shadow: 0 0 20px rgba(255, 106, 0, 0.25);
+}
+

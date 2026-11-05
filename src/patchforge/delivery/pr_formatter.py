@@ -53,7 +53,7 @@ The candidate patch satisfies all non-negotiable formal invariants verified by Z
 | :--- | :--- | :--- | :---: |
 | **Baseline Regression Suite** | 0 Failures | 0 Regressions | ✅ PASS |
 | **Agent Alpha PoC Test** | Neutralized / Blocked | Attack Defended | 👻 BLOCKED |
-| **Mutation Testing (AST)** | Score $\ge 85\%$ | **{mutation_score:.1f}%** Killed | 🧬 PASS |
+| **Mutation Testing (AST)** | Score $\\ge 85\\%$ | **{mutation_score:.1f}%** Killed | 🧬 PASS |
 | **Delta-SAST Scan** | 0 Original & 0 New Alerts | Clean Signature | 🛡️ CLEAN |
 | **Air-Gap Network Guard** | `--network none` | Zero Sockets Permitted | 🔒 SECURE |
 

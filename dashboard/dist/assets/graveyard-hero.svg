@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240" fill="none">
+  <!-- Night Sky & Fog -->
+  <rect width="800" height="240" fill="#120720"/>
+  <circle cx="680" cy="70" r="45" fill="#ffd700" opacity="0.8"/>
+  <circle cx="660" cy="65" r="45" fill="#120720"/>
+  
+  <!-- Ground Silhouette -->
+  <path d="M 0 190 Q 200 170 400 195 T 800 185 L 800 240 L 0 240 Z" fill="#0d0d0d"/>
+
+  <!-- Tombstones -->
+  <path d="M 120 200 L 120 150 A 20 20 0 0 1 160 150 L 160 200 Z" fill="#2d2238" stroke="#ff6b00" stroke-width="2"/>
+  <text x="140" y="175" fill="#e0d8cc" font-size="10" font-family="monospace" text-anchor="middle">R.I.P.</text>
+  <text x="140" y="190" fill="#ff6b00" font-size="8" font-family="monospace" text-anchor="middle">CWE-89</text>
+
+  <path d="M 320 205 L 320 145 A 25 25 0 0 1 370 145 L 370 205 Z" fill="#2d2238" stroke="#00ff88" stroke-width="2"/>
+  <text x="345" y="170" fill="#e0d8cc" font-size="10" font-family="monospace" text-anchor="middle">R.I.P.</text>
+  <text x="345" y="185" fill="#00ff88" font-size="8" font-family="monospace" text-anchor="middle">CWE-22</text>
+
+  <path d="M 520 200 L 520 155 A 18 18 0 0 1 556 155 L 556 200 Z" fill="#2d2238" stroke="#ff8c33" stroke-width="2"/>
+  <text x="538" y="178" fill="#e0d8cc" font-size="9" font-family="monospace" text-anchor="middle">R.I.P.</text>
+  <text x="538" y="192" fill="#ff8c33" font-size="8" font-family="monospace" text-anchor="middle">CWE-79</text>
+
+  <!-- Flying Bats -->
+  <path d="M 220 80 Q 225 70 235 75 Q 240 85 245 75 Q 255 70 260 80 Q 240 95 220 80 Z" fill="#ff6b00"/>
+  <path d="M 460 50 Q 465 42 473 46 Q 477 55 481 46 Q 490 42 495 50 Q 478 63 460 50 Z" fill="#ff8c33"/>
+</svg>
+

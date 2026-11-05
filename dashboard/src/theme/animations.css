@@ -1,50 +1,87 @@
+/* Custom Cyber-Gothic Keyframe Animations */
 @keyframes ghostFloat {
-  0% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-  50% { transform: translateY(-20px) rotate(3deg); opacity: 0.6; }
-  100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-}
-
-@keyframes cauldronBubble {
-  0% { transform: scale(1); filter: drop-shadow(0 0 5px #ff6b00); }
-  50% { transform: scale(1.05); filter: drop-shadow(0 0 15px #ffd700); }
-  100% { transform: scale(1); filter: drop-shadow(0 0 5px #ff6b00); }
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
 }
 
 @keyframes candleFlicker {
-  0%, 100% { opacity: 0.9; box-shadow: 0 0 10px #ff6b00; }
-  25% { opacity: 0.7; box-shadow: 0 0 6px #ff8c33; }
-  50% { opacity: 1.0; box-shadow: 0 0 18px #ffd700; }
-  75% { opacity: 0.8; box-shadow: 0 0 8px #ff6b00; }
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(255, 106, 0, 0.7));
+  }
+  25% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(255, 106, 0, 0.5));
+  }
+  50% {
+    opacity: 0.98;
+    filter: drop-shadow(0 0 15px rgba(255, 106, 0, 0.85));
+  }
+  75% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 6px rgba(255, 106, 0, 0.4));
+  }
 }
 
-@keyframes bloodDrip {
-  0% { height: 0; opacity: 0.8; }
-  100% { height: 12px; opacity: 1; }
+@keyframes cauldronBubble {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
 }
 
-@keyframes batFly {
-  0% { transform: translate(-50px, 20px) scale(0.8); }
-  50% { transform: translate(300px, -30px) scale(1); }
-  100% { transform: translate(700px, 10px) scale(0.9); }
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(10px) scale(0.6);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-25px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes slimeDrip {
+  0% {
+    height: 0px;
+    opacity: 0.8;
+  }
+  70% {
+    height: 18px;
+    opacity: 1;
+  }
+  100% {
+    height: 0px;
+    opacity: 0;
+  }
+}
+
+@keyframes energyBeam {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
 
 .animate-ghost-float {
-  animation: ghostFloat 4s ease-in-out infinite;
-}
-
-.animate-cauldron-bubble {
-  animation: cauldronBubble 2s ease-in-out infinite;
+  animation: ghostFloat 6s ease-in-out infinite;
 }
 
 .animate-candle-flicker {
-  animation: candleFlicker 1.5s infinite;
+  animation: candleFlicker 3s infinite;
 }
 
-.animate-blood-drip {
-  animation: bloodDrip 1.2s infinite alternate;
+.animate-cauldron-bubble {
+  animation: cauldronBubble 4s ease-in-out infinite;
 }
-
-.animate-bat-fly {
-  animation: batFly 12s linear infinite;
-}
-

@@ -18,6 +18,9 @@ class PatchForgeSettings(BaseSettings):
     max_iterations: int = 5
     use_stubs: bool = False
 
+    # Database Persistence Layer
+    database_url: str = "sqlite:///./patchforge.db"
+
     # AWS Cloud Services
     aws_region: str = "us-east-1"
     aws_access_key_id: Optional[SecretStr] = None
@@ -51,8 +54,7 @@ class PatchForgeSettings(BaseSettings):
     # API & Dashboard Backend
     api_host: str = "0.0.0.0"
     api_port: int = 8000
-    dashboard_cors_origins: str = "http://localhost:5173,http://localhost:3000"
+    dashboard_cors_origins: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173"
 
 
 settings = PatchForgeSettings()
-

@@ -1,19 +1,33 @@
-"""FastAPI application factory and middleware configuration."""
+"""FastAPI application factory, database initialization, and middleware configuration."""
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from patchforge.config import settings
+from patchforge.db.session import init_db
 from patchforge.api.routes.dashboard import router as dashboard_router
 from patchforge.api.routes.vulnerabilities import router as vuln_router
 from patchforge.api.routes.runs import router as runs_router
 from patchforge.api.routes.pipeline import router as pipeline_router
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan: initializes database and tables on startup."""
+    try:
+        init_db()
+        print("🎃 [DATABASE] Initialized PatchForge relational tables & seed data.")
+    except Exception as e:
+        print(f"⚠️ [DATABASE] Warning during database init: {e}")
+    yield
+
+
 def create_app() -> FastAPI:
     """Builds and configures the FastAPI application."""
     app = FastAPI(
         title="🎃 PatchForge AI Dashboard API",
-        description="REST & WebSocket API backend for the Halloween-themed remediation console.",
+        description="REST & WebSocket API backend connected to PostgreSQL/SQLite, Z3 Solver, and LangGraph.",
         version="1.0.0",
+        lifespan=lifespan,
     )
 
     # CORS configuration
@@ -29,7 +43,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Mount routes
+    # Mount API routers
     app.include_router(dashboard_router)
     app.include_router(vuln_router)
     app.include_router(runs_router)
@@ -39,7 +53,8 @@ def create_app() -> FastAPI:
     def health():
         return {
             "status": "HEALTHY",
-            "theme": "🎃 Halloween Dark Mode",
+            "database": "CONNECTED",
+            "theme": "🎃 Halloween Cyber-Gothic",
             "version": "1.0.0",
         }
 
@@ -47,4 +62,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-

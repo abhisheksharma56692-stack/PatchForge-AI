@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300" opacity="0.25">
+  <defs>
+    <linearGradient id="fogGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#120720" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#3b1d5c" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#0a070f" stop-opacity="0.9"/>
+    </linearGradient>
+    <filter id="turb">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="4" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <rect width="1000" height="300" fill="url(#fogGrad)" filter="url(#turb)"/>
+</svg>
+

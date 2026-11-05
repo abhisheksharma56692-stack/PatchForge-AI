@@ -1,58 +1,59 @@
-/**
- * WebSocket client with automatic reconnection for live pipeline state streaming.
- */
-export function connectPipelineWebSocket(onMessage, onStatusChange) {
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const host = window.location.host;
-  const wsUrl = `${protocol}//${host}/ws/pipeline`;
+// WebSocket client for real-time pipeline telemetry streaming
 
+export const connectPipelineWebSocket = (onMessage, onStatusChange) => {
   let ws = null;
-  let isClosed = false;
+  let reconnectTimer = null;
+  let isManuallyClosed = false;
 
-  function connect() {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = `${protocol}//${window.location.host}/ws/pipeline`;
+
+  const connect = () => {
     try {
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
-        if (onStatusChange) onStatusChange('CONNECTED');
+        onStatusChange?.('CONNECTED');
       };
 
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          onMessage(data);
+          onMessage?.(data);
         } catch {
-          onMessage(event.data);
-        }
-      };
-
-      ws.onclose = () => {
-        if (!isClosed) {
-          if (onStatusChange) onStatusChange('RECONNECTING');
-          setTimeout(connect, 3000);
+          onMessage?.({ event: 'RAW_TEXT', data: event.data });
         }
       };
 
       ws.onerror = () => {
-        ws.close();
+        onStatusChange?.('OFFLINE');
+      };
+
+      ws.onclose = () => {
+        if (!isManuallyClosed) {
+          onStatusChange?.('RECONNECTING');
+          reconnectTimer = setTimeout(connect, 4000);
+        } else {
+          onStatusChange?.('DISCONNECTED');
+        }
       };
     } catch {
-      setTimeout(connect, 3000);
+      onStatusChange?.('OFFLINE');
     }
-  }
+  };
 
   connect();
 
   return {
-    disconnect: () => {
-      isClosed = true;
-      if (ws) ws.close();
-    },
     send: (msg) => {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(typeof msg === 'string' ? msg : JSON.stringify(msg));
       }
     },
+    disconnect: () => {
+      isManuallyClosed = true;
+      clearTimeout(reconnectTimer);
+      if (ws) ws.close();
+    },
   };
-}
-
+};
